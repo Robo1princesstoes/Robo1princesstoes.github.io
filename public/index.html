@@ -1,0 +1,2396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cats in Knead — All-in-one (Readable)</title>
+
+  <!--
+    ---------------------------
+    CSS (Readable, commented)
+    ---------------------------
+  -->
+  <style>
+    /* Reset & base */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+      /* Simple Photo Gallery Modal */
+    .gallery-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .gallery-box {
+      position: relative;
+      background: #fff;
+      padding: 1rem;
+      max-width: 700px;
+      width: 90%;
+      text-align: center;
+      border-radius: 8px;
+    }
+
+    #galleryMainImage {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff8;
+      border: none;
+      padding: .4rem .7rem;
+      border-radius: .3rem;
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+
+    .arrow.left { left: 10px; }
+    .arrow.right { right: 10px; }
+
+    .thumb-row {
+      display: flex;
+      justify-content: center;
+      gap: .4rem;
+      margin-top: .5rem;
+    }
+
+    .thumb {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.6;
+      border: 2px solid transparent;
+    }
+
+    .thumb.active {
+      opacity: 1;
+      border-color: #333;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #fff;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+/* foster modal*/
+      .gallery-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .gallery-box {
+        position: relative;
+        background: #fff;
+        padding: 1rem;
+        max-width: 700px;
+        width: 90%;
+        text-align: center;
+        border-radius: 8px;
+      }
+
+      #fosterGalleryMainImage {
+        width: 100%;
+        height: 420px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+
+      .arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #fff8;
+        border: none;
+        padding: .4rem .7rem;
+        border-radius: .3rem;
+        cursor: pointer;
+        font-size: 1.5rem;
+      }
+
+      .arrow.left { left: 10px; }
+      .arrow.right { right: 10px; }
+
+      .thumb-row {
+        display: flex;
+        justify-content: center;
+        gap: .4rem;
+        margin-top: .5rem;
+      }
+
+      .thumb {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        cursor: pointer;
+        opacity: 0.6;
+        border: 2px solid transparent;
+      }
+
+      .thumb.active {
+        opacity: 1;
+        border-color: #333;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #fff;
+        border: none;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg,#667eea,#764ba2);
+      color: #fff;
+      padding: 14px 0;
+      z-index: 1200;
+      box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo { display: flex; flex-direction: column; }
+    .logo .brand { font-size: 1.35rem; font-weight: 700; }
+    .logo .tag { font-size: .84rem; opacity: .95; }
+
+    nav ul { list-style: none; display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+    nav a {
+      padding: .4rem .8rem;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 600;
+      display: inline-block;
+    }
+    nav a.active,
+    nav a:hover {
+      background: rgba(255,255,255,.12);
+    }
+
+    /* Main layout */
+    main {
+      max-width: 1200px;
+      margin: 120px auto 40px;
+      padding: 0 1.25rem;
+    }
+
+    .section {
+      display: none;
+      padding: 2rem 0;
+      min-height: 60vh;
+    }
+    .section.active { display: block; }
+
+    .hero {
+      background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,.06);
+      text-align: center;
+    }
+
+    h1 { color: #2f3fa7; margin-bottom: .5rem; }
+    h2 { color: #667eea; margin: 1rem 0; }
+
+    .btn {
+      background: linear-gradient(135deg,#667eea,#764ba2);
+      color: #fff;
+      padding: .7rem 1rem;
+      border-radius: 8px;
+      display: inline-block;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn.ghost {
+      background: #fff;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+
+    .btn.small { padding: .45rem .6rem; font-size: .95rem; }
+
+    .grid { display: grid; gap: 1rem; }
+
+    /* info cards grid */
+    .info-grid { grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); }
+    .info-card {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.05);
+    }
+
+    /* Cats grid and card */
+    .controls { display:flex; justify-content:space-between; align-items:center; gap:.6rem; flex-wrap:wrap; margin-top:1rem; }
+
+    .cat-grid {
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .cat-card {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,.05);
+      display:flex;
+      flex-direction:column;
+      min-height: 320px;
+      transition: transform .18s ease;
+    }
+
+    .cat-card:hover { transform: translateY(-6px); }
+
+    .cat-image {
+      height: 180px;
+      background: linear-gradient(135deg,#efefef,#e6e6e6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .cat-image img { width:100%; height:180px; object-fit:cover; display:block; }
+
+    .cat-info { padding: 1rem; display:flex; flex-direction:column; gap:.6rem; flex:1; }
+    .cat-name { color:#667eea; font-weight:700; font-size:1.05rem; }
+    .cat-details { color:#666; font-size:.95rem; }
+    .cat-actions { margin-top:auto; display:flex; gap:.5rem; flex-wrap:wrap; }
+
+    /* Pagination */
+    .pagination {
+      display:flex;
+      justify-content:center;
+      gap:.45rem;
+      margin-top:1rem;
+      align-items:center;
+    }
+    .page-btn {
+      background:#fff;
+      border:1px solid #ddd;
+      padding:.45rem .7rem;
+      border-radius:6px;
+      cursor:pointer;
+    }
+    .page-btn.active {
+      background: linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;
+      border-color:transparent;
+    }
+    .arrow-btn {
+      background:#fff;
+      border:1px solid #ddd;
+      padding:.45rem .6rem;
+      border-radius:8px;
+      cursor:pointer;
+    }
+
+
+    /* Two-column layout for home */
+    .two-col { display:grid; grid-template-columns: 1fr 320px; gap: 1rem; align-items:start; }
+
+    aside .card {
+      background:#fff;
+      padding:1rem;
+      border-radius:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,.05);
+      margin-bottom:1rem;
+    }
+
+    .socials { display:flex; flex-direction:column; gap:.5rem; }
+    .socials a {
+      display:inline-flex;
+      align-items:center;
+      gap:.6rem;
+      padding:.45rem .6rem;
+      border-radius:8px;
+      background:#fff;
+      border:1px solid #eee;
+      color:#333;
+    }
+
+    .qr-box {
+      background:#fff;
+      padding:.8rem;
+      border-radius:10px;
+      border:1px dashed #e1e1e1;
+      text-align:center;
+    }
+    .qr-box svg { width:120px; height:120px; display:block; margin:0 auto .4rem; }
+
+    /* events & quotes */
+    .events {
+      background:#fff;
+      padding:1rem;
+      border-radius:10px;
+      border-left:4px solid #667eea;
+      box-shadow:0 6px 18px rgba(0,0,0,.04);
+    }
+    .event { margin-bottom:.6rem; }
+    .quotes {
+      background:#fff;
+      padding:1rem;
+      border-radius:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,.04);
+    }
+    .quote { padding:.6rem; border-bottom:1px dashed #eee; }
+    .quote:last-child { border-bottom:none; }
+
+    /* Profile section styles */
+    .profile {
+      background:#fff;
+      padding:1.25rem;
+      border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,.06);
+    }
+    .profile .gallery { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.75rem; }
+    .profile .gallery img { width:30%; height:420px; object-fit:cover; border-radius:20px; }
+    .profile .meta { display:flex; justify-content:space-between; align-items:center; margin-top:.9rem; color:#666; }
+
+    .profile .section-block { margin-top:1rem; padding-top:1rem; border-top:1px solid #f0f0f0; }
+
+    /* responsive */
+    @media (max-width:1000px) {
+      .cat-grid { grid-template-columns: repeat(2,1fr); }
+      .two-col { grid-template-columns: 1fr; }
+      aside { order: 2; }
+    }
+    @media (max-width:600px) {
+      .cat-grid { grid-template-columns: 1fr; }
+      header { padding: 10px 0; }
+      main { margin-top: 110px; }
+      .profile .gallery img { width:100%; height:220px; }
+    }
+    /* Ensure the navigation list is styled horizontally if it isn't already */
+    nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex; /* Adjust based on your current navigation layout (e.g., block for vertical) */
+    }
+
+    nav ul li {
+        position: relative; /* Essential for positioning the dropdown content relative to the parent li */
+        padding: 0 1px;
+    }
+
+    /* Hide the dropdown content by default */
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9; /* Or your site's navigation background color */
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1; /* Ensures it appears over other content */
+        padding: 0;
+        margin-top: 0;
+    }
+
+    /* Style the links within the dropdown */
+    .dropdown-content li a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+    }
+
+    /* Change color of dropdown links on hover */
+    .dropdown-content li a:hover {
+        background-color: #ddd;
+    }
+
+    /* Show the dropdown menu when the user hovers over the parent .dropdown li */
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================
+       HEADER / NAVIGATION
+       ============================ -->
+  <header>
+    <div class="header-inner">
+
+      <div class="logo">
+        <div style="display:flex; align-items:center; gap:.8rem;">
+          <div style="width:50px; height:50px; background:#f0f0f0; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+            <img src="Logo/main.jpg" width="120" height="75">
+          </div>
+          <div>
+            <div class="brand">Cats in Knead</div>
+            <div class="tag">Rescue • Foster • Adopt</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <nav>
+        <ul>
+          <li><a href="#home" class="nav-link active" onclick="navigateSection('home')">Home</a></li>
+          <li><a href="#cats" class="nav-link" onclick="navigateSection('cats')">Cats for Adoption</a></li>
+          <li><a href="#clinic" class="nav-link" onclick="navigateSection('clinic')">Veterinary</a></li>
+          <li><a href="#fosterparents" class="nav-link" onclick="navigateSection('fosterparents')">Foster Program</a></li>
+          <li><a href="#foster" class="nav-link" onclick="navigateSection('foster')">Foster Program</a></li>
+          <li><a href="#forms" class="nav-link" onclick="navigateSection('forms')">Forms</a></li>
+          <li><a href="#contact" class="nav-link" onclick="navigateSection('contact')">Contact & Donate</a></li>
+          <li><a href="#faq" class="nav-link" onclick="navigateSection('faq')">Resources</a></li>
+        </ul>
+      </nav> -->
+      <nav>
+        <ul>
+          <li><a href="#home" class="nav-link active" onclick="navigateSection('home')">Home</a></li>
+          <li><a href="#cats" class="nav-link" onclick="navigateSection('cats')">Cats for Adoption</a></li>
+          <li><a href="#clinic" class="nav-link" onclick="navigateSection('clinic')">Clinic</a></li>
+
+          <li class="dropdown">
+            <a href="#foster" class="nav-link" onclick="navigateSection('foster')">
+              Foster Program &#9662;
+            </a>
+
+            <ul class="dropdown-content">
+              <!-- Dropdown options -->
+              <li><a href="#fosterparents" class="nav-link" onclick="navigateSection('fosterparents')">For Foster Parents</a></li>
+              <li><a href="#foster" class="nav-link" onclick="navigateSection('foster')">General Program Info</a></li>
+            </ul>
+          </li>
+
+
+          <li><a href="#forms" class="nav-link" onclick="navigateSection('forms')">Forms</a></li>
+          <li class="dropdown">
+              <li><a href="#contact" class="nav-link" onclick="navigateSection('contact')">Contact</a></li>
+          
+          <li><a href="#faq" class="nav-link" onclick="navigateSection('faq')">Resources</a></li>
+        </ul>
+      </nav>
+
+
+    </div>
+  </header>
+
+  <!-- ============================
+       MAIN CONTENT
+       ============================ -->
+  <main>
+
+    <!-- ----------------------------
+         HOME SECTION
+         ---------------------------- -->
+    <section id="home" class="section active">
+
+      <div class="hero">
+        <div style="display:flex; gap:2rem; align-items:center; flex-wrap:wrap; margin-bottom:1rem;">
+          <div style="flex:1; min-width:300px;">
+            <h1>Welcome to Cats in Knead</h1>
+            <p style="color:#666; margin-top:.5rem;">
+                Cats In Knead (CIK) is a small, volunteer-based cat rescue group in Butler County PA. We are a 501 (c) 3 non-profit organization, striving to reduce the number of stray cats & kittens in our local communities. We do this by providing in-home foster care & adoption, hosting spay/neuter/vaccine clinics and assisting/coordinating TNR projects. Our fundraising supports not only our cats and kittens in foster care, but also medical care of owned cats when a verified financial need exists.
+            </p>
+          </div>
+          <div style="width:200px; height:200px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:0rem; text-align:center;">
+              <img src="Logo/main.jpg" style="max-width:100%; max-height:100%; height:auto;">
+          </div>
+        </div>
+
+        <div style="margin-top:1rem;">
+          <a class="btn" onclick="navigateSection('cats')">View Cats for Adoption</a>
+          <a class="btn" onclick="navigateSection('foster')">Become a Foster</a>
+          <a class="btn" onclick="navigateSection('faq')">Frequent Questions</a>
+          <a class="btn ghost" onclick="navigateSection('contact')">Donate</a>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;" class="two-col">
+
+        <!-- Main column -->
+        <div>
+
+          <!-- <h2>Our Mission</h2>
+
+          <div class="grid info-grid" style="margin-top:.6rem;">
+            <div class="info-card">
+              <strong>🏠 Rescue & Foster</strong>
+              <p style="color:#666; margin-top:.4rem;">We place rescued cats in loving foster homes and prepare them for adoption.</p>
+            </div>
+
+            <div class="info-card">
+              <strong>⚕️ Medical Care</strong>
+              <p style="color:#666; margin-top:.4rem;">Spay/neuter, vaccines, and treatment for rescued cats.</p>
+            </div>
+
+            <div class="info-card">
+              <strong>❤️ Adoption Support</strong>
+              <p style="color:#666; margin-top:.4rem;">We match cats and provide post-adoption support.</p>
+            </div>
+          </div> -->
+
+          <!-- Upcoming events -->
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+              <h2 style="margin-top:1rem;">Upcoming Events</h2>
+
+              <div style="display:flex; gap:1rem; align-items:flex-start; flex-wrap:wrap;">
+                  <div style="flex:1; min-width:300px;">
+                    <div id="events-area" class="events" aria-live="polite">
+                      <!-- JS will populate events here -->
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 6rem;">
+                      <div id="event-flyer-wrap" style="width:250px; height:340px; background:#f0f0f0; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:0.5rem; text-align:center; overflow:hidden;">
+                          <div id="event-flyer-placeholder" style="color:#666; font-size:.9rem; display:flex; flex-direction:column; align-items:center; gap:.5rem;">
+                            <div style="font-size:42px;">🎉</div>
+                            <div>Upcoming Event Flyer</div>
+                          </div>
+                          <img id="event-flyer-img" alt="Upcoming Event Flyer" style="display:none; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; border-radius:6px;">
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          
+
+
+          <div style="margin-top:.6rem;">
+            <a class="btn small" onclick="navigateSection('calendar')">See All Events</a>
+          </div>
+
+          <!-- Foster quotes -->
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+
+          
+          <h2 style="margin-top:2rem;">Happy Foster Parents</h2>
+
+          <div id="quotes-list" class="quotes">
+            <!-- JS will populate quotes here -->
+          </div>
+          </div>
+
+          <div style="margin-top:.4rem;">
+            <a class="btn small" onclick="window.location.href='mailto:catsinknead2024@gmail.com';">Share Your Foster Story</a>
+            <a class="btn small ghost" onclick="openFosterGallery()">Check Foster Cats</a>
+          </div>
+
+        </div>
+
+        <!-- Right column / aside -->
+        <aside>
+
+          <!-- Socials & newsletter -->
+          <div
+          <div class="card">
+            <h3 style="margin-bottom:.5rem;">Follow Us</h3>
+
+            <div class="socials" aria-label="Social media links">
+              <a href="https://m.facebook.com/61559596563397/" target="_blank" rel="noopener">Facebook</a>
+              <a href="https://youtube.com" target="_blank" rel="noopener">YouTube</a>
+              <a href="https://www.chewy.com/g/community-cat-network_b76903607" target="_blank" rel="noopener">Chewy Wishlist</a>
+              <a href="https://a.co/aSsWNgX" target="_blank" rel="noopener">Amazon Wishlist</a>
+              <a href="https://www.zeffy.com/en-US/organizations/cats-in-knead" target="_blank" rel="noopener">Zeffy Fundraising</a>
+
+
+
+            </div>
+              <div style="width:200px; height:200px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:0rem; text-align:center;">
+                <img src="events/vet.png" style="width:100%; height:100%; object-fit:cover; border-radius:inherit;">
+          </div>
+          </div>
+      </div>
+        </aside>
+
+      </div>
+
+
+      <!-- Volunteer Section -->
+      <div style="margin-top:2rem; padding-top:2rem; border-top:2px solid #ddd;">
+        <h2 style="text-align:center; margin-bottom:1.5rem;">Volunteer With Us</h2>
+        
+        <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:1.5rem;">
+          <p style="text-align:center; color:#666; font-size:1.1rem; margin-bottom:1rem;">
+            Join our dedicated team of volunteers making a difference in the lives of cats in Butler County! Whether you have a few hours a week or a few hours a month, we have opportunities that fit your schedule. The volunteers at cats in knead spend many hours working toward fundraising, scheduling clinics, volunteering at events and fostering. WE appreciate everyone’s time and respect their personal privacy at times when they are not volunteering. For this reason, we do not list personal phone numbers of our group members. If a phone number is listed to contact for a specific event, please only call that number if in relation to the event. <br> Reaching out to us via email, or via facebook messenger, is the best way to reach us at this time.
+          </p>
+        </div>
+
+        <div class="grid info-grid" style="margin-top:1rem;">
+          <div class="info-card">
+
+            <strong>Foster Care</strong>
+            <p style="color:#666; margin-top:.4rem;">Provide a temporary loving home for cats and kittens. We supply food, litter, and medical care - you provide the love!</p>
+          </div>
+
+          <div class="info-card">
+
+            <strong>Photography & Social Media</strong>
+            <p style="color:#666; margin-top:.4rem;">Help us showcase our adoptable cats with great photos and engaging social media posts. No professional experience needed!</p>
+          </div>
+
+          <div class="info-card">
+            <strong>Event Support</strong>
+            <p style="color:#666; margin-top:.4rem;">Help at fundraising events, adoption days, and community outreach. Great for meeting fellow cat lovers!</p>
+          </div>
+
+          <div class="info-card">
+            <strong>Transportation</strong>
+            <p style="color:#666; margin-top:.4rem;">Help transport cats to vet appointments, adoption events, or between foster homes. Flexible scheduling available.</p>
+          </div>
+          <div class="info-card">
+
+            <strong>Administrative Help</strong>
+            <p style="color:#666; margin-top:.4rem;">Assist with paperwork, adoption applications, phone calls, and email correspondence. Work from home!</p>
+          </div>
+
+          <div class="info-card">
+            <strong>Handyman Services</strong>
+            <p style="color:#666; margin-top:.4rem;">Help with building cat shelters, repairing carriers, or maintenance at our facilities. Skills always appreciated!</p>
+          </div>
+        </div>
+
+        <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1.5rem;">
+          <h3 style="margin-bottom:1rem;">Why Volunteer With Cats in Knead?</h3>
+          <ul style="color:#666; padding-left:1.5rem; line-height:1.8;">
+            <li><strong>Make a Real Impact:</strong> Every hour you volunteer directly helps save cats' lives</li>
+            <li><strong>Flexible Scheduling:</strong> We work around your availability - no minimum commitment required</li>
+            <li><strong>Training Provided:</strong> We'll teach you everything you need to know</li>
+            <li><strong>Community:</strong> Join a welcoming group of passionate animal lovers</li>
+            <li><strong>Personal Growth:</strong> Develop new skills and gain valuable experience</li>
+            <li><strong>All Ages Welcome:</strong> Family-friendly opportunities available (minors must be accompanied by an adult)</li>
+          </ul>
+        </div>
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.5rem;">
+          <div style="flex:1; min-width:250px; background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+            <h4 style="margin-bottom:.8rem;">Getting Started</h4>
+            <ol style="color:#666; padding-left:1.2rem; line-height:1.8;">
+              <li>Fill out our volunteer application</li>
+              <li>Attend a brief orientation session</li>
+              <li>Choose your volunteer activities</li>
+              <li>Start making a difference!</li>
+            </ol>
+            <div style="margin-top:1rem;">
+              <a class="btn" onclick="navigateSection('forms')">Volunteer Coordinator Contact</a>
+            </div>
+          </div>
+
+          <div style="flex:1; min-width:250px;">
+            <div id="volunteer-photo-wrap" style="width:100%; height:340px; background:#f0f0f0; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:0.75rem; text-align:center; overflow:hidden;">
+              <div id="volunteer-photo-placeholder" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="font-size:60px; margin-bottom:.5rem;"></div>
+                <div style="color:#666; font-size:.9rem;">Volunteer Team Photo Needed</div>
+              </div>
+              <img id="volunteer-photo-img" alt="Volunteer Team Photo" style="display:none; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; border-radius:6px;">
+            </div>
+          </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:2rem; border-radius:12px; text-align:center; margin-top:1.5rem;">
+          <h3 style="color:white; margin-bottom:.8rem;">Questions About Volunteering?</h3>
+          <p style="margin-bottom:1rem; opacity:0.95;">Contact our Volunteer Coordinator: volunteer@catsinknead.org or call (724) 679-2422</p>
+          <div style="display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;">
+            <a class="btn" style="background:white; color:#667eea;" onclick="navigateSection('contact')">Contact Us</a>
+            <a class="btn" style="border-color:white; color:white;" onclick="navigateSection('faq')">View FAQs</a>
+          </div>
+        </div>
+      </div>
+
+    </section> <!-- end home -->
+      <!-- Simple Photo Gallery Modal -->
+      <div id="photoGalleryModal" class="gallery-modal">
+        <div class="gallery-box">
+          <button class="close-btn" onclick="closeGallery()">✕</button>
+
+          <button class="arrow left" onclick="prevGalleryPhoto()">❮</button>
+
+          <img id="galleryMainImage" src="" />
+
+          <button class="arrow right" onclick="nextGalleryPhoto()">❯</button>
+
+          <div id="galleryThumbs" class="thumb-row"></div>
+        </div>
+      </div>
+
+
+    <!-- ----------------------------
+         CATS FOR ADOPTION
+         (grid, pagination, 36 kitties)
+         ---------------------------- --> 
+      <section id="cats" class="section">
+
+        <h1>Cats Available for Adoption</h1>
+
+        <p style="color:#666;">
+          Click any cat to view a full profile.
+        </p>
+
+        <!-- Controls: Previous/Next & Page Size -->
+        <div class="controls" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; align-items:center;">
+
+          <!-- Pagination Buttons -->
+          <div style="display:flex; align-items:center; gap:.5rem;">
+            <button class="btn small" onclick="prevPage()" title="Previous page">◀ Previous</button>
+            <button class="btn small" onclick="nextPage()" title="Next page">Next ▶</button>
+          </div>
+
+          <!-- Items per Page -->
+          <div style="display:flex; align-items:center; gap:.5rem;">
+            <label style="color:#666;">Page size</label>
+            <select id="perPage" onchange="changePerPage()" style="padding:.4rem;border-radius:6px;border:1px solid #ddd;">
+              <option value="12" selected>12 per page</option>
+              <option value="24">24 per page</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Grid that JS populates -->
+        <div id="cat-grid" class="cat-grid" aria-live="polite"></div>
+
+        <!-- Pagination buttons (optional, duplicate for bottom) -->
+        <div id="pagination" class="pagination" role="navigation" aria-label="Pages"></div>
+
+      </section>
+
+      <!-- Modal for full cat profile -->
+      <div id="cat-profile-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+        <div id="modal-content" style="background:white; padding:2rem; border-radius:12px; max-width:600px; width:90%; max-height:90%; overflow:auto; position:relative;">
+          <button onclick="closeCatProfile()" style="position:absolute; top:1rem; right:1rem; background:#ccc; border:none; padding:.5rem 1rem; border-radius:6px;">Close</button>
+          <!-- Dynamic cat content injected here -->
+        </div>
+      </div>
+
+      <!--- Induvidual Cat Profiles --->
+    <!-- ----------------------------
+         CLINIC
+         ---------------------------- -->
+    <section id="clinic" class="section">
+
+      <h1>Neuter Clinic Services</h1>
+
+      <p style="color:#666;">Affordable and free services to help keep cats healthy and reduce overpopulation.</p>
+
+      <div class="grid info-grid" style="margin-top:1rem;">
+        <div class="info-card">
+          <strong>Spay/Neuter</strong>
+          <p style="color:#666; margin-top:.4rem;">For Butler County residents, you qualify for the SEA program (free spay/neuter), proof of Butler County residence must be presented showing current address. For rescue cats; low-cost options for community cats.</p>
+        </div>
+
+        <div class="info-card">
+          <strong>Vaccinations</strong>
+          <p style="color:#666; margin-top:.4rem;">Core vaccines including rabies, FVRCP; FeLV where needed.</p>
+        </div>
+
+        <div class="info-card">
+          <strong>Microchipping</strong>
+          <p style="color:#666; margin-top:.4rem;">Microchipped cats can be scanned at the clinic with our chip reader.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;" class="info-card">
+        <h3>Clinic Hours & Appointments</h3>
+        <p><strong>Location:</strong>Herman Volunteer Fire Company, 789 Herman Rd, Butler, PA 16002</p>
+        <p><strong>Book Appointment:</strong> (724)-679-2422</p>
+        <p><strong>Information:</strong> By appointment only, check our socials for the most updated information. *Dates are subject to change.</p>
+
+        <div style="margin-top:.6rem;"><a class="btn small" onclick="openAppointment()">Book Appointment</a></div>
+      </div>
+
+    </section> <!-- end clinic -->
+
+    <!-- ----------------------------
+         FOSTER PROGRAM
+         ---------------------------- -->
+    <section id="fosterparents" class="section">
+      
+      <h1 style="text-align:center; margin-top:.5rem;">Meet Our Foster Parents</h1>
+      <div
+        <p  style="text-align:center; color:#666; font-size:0.9rem; margin-bottom:1rem;">
+          To our incredible foster parents— <br>
+      <span style="color:blue;">  Thank you. Truly.</span>
+          <br>
+          Because of you, frightened strays learn to trust again. Kittens grow up knowing safety, comfort, and love. Senior cats find soft places to rest and warm hearts to rely on. You open your homes, your time, and your hearts without hesitation, and the impact you make is immeasurable.
+
+          You are the bridge between a difficult past and a hopeful future.
+          You are healers, teachers, protectors, and cheerleaders.
+          You give second chances and sometimes first chances to cats who need it most.
+
+          Every late-night bottle feeding, every vet visit, every moment spent helping a shy cat feel brave again… it all matters. And we see you. We appreciate you more than words can express.
+
+          Thank you for your compassion, your patience, and your unwavering dedication.
+          Thank you for making our mission possible.
+          Thank you for being the reason so many cats find the loving homes they deserve.
+      <br>
+          <b>You are not just fosters—you are family to us, and heroes to them.</b>
+      <br>
+          With endless gratitude,<br>
+          All of us at Cats In Knead</p>
+      </div>
+
+      <div style="margin-top:2rem; padding-top:.8rem; border-top:2px solid #ddd;">
+        <h2 style="text-align:center; margin-bottom:1.5rem;">Our Foster Parents & Their Story</h2>
+        <div class="grid info-grid" id="foster-parents-grid" style="margin-top:1rem;">
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ----------------------------
+         FOSTER
+         ---------------------------- -->
+      <section id="foster" class="section">
+        <h1>Foster Cats Available</h1>
+        <p style="color:#666">
+          Meet our amazing foster cats looking for temporary homes. Click any cat to view their full profile.
+        </p>
+
+        <!-- Controls: Previous/Next & Page Size -->
+        <div class="controls" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; align-items:center;">
+
+          <!-- Pagination Buttons -->
+          <div style="display:flex; align-items:center; gap:.5rem;">
+            <button class="btn small" onclick="prevFosterPage()" title="Previous page">◀ Previous</button>
+            <button class="btn small" onclick="nextFosterPage()" title="Next page">Next ▶</button>
+          </div>
+
+          <!-- Items per Page -->
+          <div style="display:flex; align-items:center; gap:.5rem;">
+            <label style="color:#666;">Page size</label>
+            <select id="fosterPerPage" onchange="changeFosterPerPage()" style="padding:.4rem;border-radius:6px;border:1px solid #ddd;">
+              <option value="12" selected>12 per page</option>
+              <option value="24">24 per page</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Grid that JS populates -->
+        <div id="foster-grid" class="cat-grid" aria-live="polite"></div>
+
+        <!-- Pagination buttons -->
+        <div id="foster-pagination" class="pagination" role="navigation" aria-label="Pages"></div>
+
+        <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #ddd;">
+          <a class="btn" onclick="showFosterForm()">Apply to Become a Foster Parent</a>
+        </div>
+      </section>
+
+    <!-- ----------------------------
+         CALENDAR / EVENTS
+         ---------------------------- -->
+    <section id="calendar" class="section">
+      <h1>📅 Events Calendar</h1>
+      
+      <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+          <iframe src="https://embed.styledcalendar.com/#OfsD0G0Mx97guR5HA1gY" title="Styled Calendar" class="styled-calendar-container" style="width: 100%; border: none;" data-cy="calendar-embed-iframe"></iframe>
+          <script async type="module" src="https://embed.styledcalendar.com/assets/parent-window.js"></script>
+        </div>
+        
+
+        <div id="calendar-grid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:.5rem; margin-bottom:1.5rem;">
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <h2>Upcoming Events</h2>
+        <div id="all-events-list" style="margin-top:1rem;">
+          <!-- All events will be listed here by JS -->
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <h2>Event Photos &amp; Flyers</h2>
+        <div id="event-gallery" style="margin-top:1rem; display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:1rem;">
+          <!-- Event photos populated by JS -->
+        </div>
+        <div id="event-gallery-empty" style="display:none; color:#666; margin-top:1rem;">No event photos have been added yet.</div>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <a class="btn" onclick="navigateSection('home')">← Back to Home</a>
+      </div>
+    </section>
+
+    <!-- ----------------------------
+         FAQ PAGE
+         ---------------------------- -->
+    <section id="faq" class="section">
+      <h1>Resources</h1>
+      <div style="display:flex; gap:.5rem; margin-top:1.5rem; flex-wrap:wrap; align-items:center;">
+            <div style="display:flex; gap:.5rem; margin-top:1.5rem; flex-wrap:wrap; align-items:center;">
+              <!-- Left side: The Image Container -->
+          <!-- Right side: The Text Container -->
+          <div style="min-width:300px;">
+              <p style="color:#666; font-size:1.05rem;">
+                  Have questions about adopting, fostering, or volunteering with Cats in Knead? Find answers to our most commonly asked questions below!
+              </p>
+          </div>
+      </div>
+
+      <h1>Frequently Asked Questions</h1>
+
+      <div style="display:flex; gap:1rem; margin-top:1.5rem; flex-wrap:wrap; align-items:center;">
+        <a class="btn" onclick="scrollToFaqSection('faq-adoption')">Adoption Questions</a>
+        <a class="btn" onclick="scrollToFaqSection('faq-foster')">Foster Questions</a>
+        <a class="btn" onclick="scrollToFaqSection('faq-general')">General Questions</a>
+        <a class="btn" onclick="scrollToFaqSection('faq-contact')">Still Have Questions?</a>
+        <a class="btn" onclick="navigateSection('calendar')">See Events</a>
+
+      </div>
+
+
+      <div id="faq-adoption" style="margin-top:2rem;">
+        <h2>Adoption Questions</h2> 
+        <div style="display:flex; gap:0.2rem; flex-wrap:wrap; align-items:center;">
+
+            <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+              <h3 style="color:#667eea;">How long will it take to complete the application?</h3>
+              <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+                We expect it will take between 30 and 45 minutes to complete and then submit our application via Google Forms. 
+              </p>
+            </div>
+          </div>
+        </div>
+      <div style="display:flex; gap:0.1rem; flex-wrap:wrap; align-items:center;">
+
+            <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+              <h3 style="color:#667eea;">Why do you ask so many personal questions?</h3>
+              <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+                The questions we ask are directly related to helping us understand how you will care for your new cat/kitten. Since our ultimate goal is to place our fosters in a safe and loving forever home, we need to be extremely sure we are making the best match possible!!
+              </p>
+            </div>
+          </div>
+        </div>
+
+          </div>
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">Do you check references?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            YES, YES AND YES!! You will provide us with 2 NON-FAMILY personal references as well as a vet reference. We contact them by phone and ask a few questions about your character and what would make you a great pet parent. When speaking with the vet, we ask about your previous/current pets and general care you have provided based on vet recommendations.
+          </p>
+        </div>
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">What happens if this is my first pet and I don't have a vet yet?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            If you do not yet have a veterinarian, we ask that you call a few and determine at least 2 that you plan to take your cat/kitten to after adoption. We can give recommendations for vets in your area~just ask us!!
+          </p>
+        </div>
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">When can I meet the Cat/Kitten I'm interested in?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            We only allow meet and greets to occur AFTER your adoption application is approved. We do not want to waste anyone’s time (our foster or yours) if your application doesn’t meet our standards. 
+          </p>
+        </div>
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">How do you decide which applications to approve or deny?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            Your responses to the application questions are our basis for general approval/denial. We reserve the right to contact you for clarification of any response. Further, we reserve the right to conduct a home visit (virtual or in person) to insure your space is adequate for the care of your new cat/kitten. Cats In Knead does not discriminate on the basis of race, color, religion (creed), gender, gender expression, age, national origin (ancestry), disability, marital status, sexual orientation, veteran status, or any other characteristic protected under applicable federal, state, or local laws. This commitment extends to all aspects of our organization, including adoptions, volunteer opportunities, program participation, and service provision.
+          </p>
+        </div>
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">When can I take my new Cat/Kitten home?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            Because applications are approved before meet and greets, we typically allow adopters to take their cat/kitten home directly from the meet and greet, if they feel that the match is perfect. If not, because the application is approved, the adopter may choose another cat they have a connection with/are interested in at the meet and greet, or another cat CIK has in foster care. 
+          </p>
+        </div>
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">What happens after adoption?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            We will let you know if your cat is in need of any medical updates at the time of adoption. We do ask that you make an appointment with your vet to establish your new cat/kitten, in the event an emergency arises. This should occur within 2 weeks of adoption. You are not required to notify us of this visit, but we do reserve the right to check in at any time to insure your cat is being well cared for. We LOVE updates and would like to feature your adoption story on our social media, so please, send us pictures and updates as often as you like!!
+          </p>
+        </div>
+
+
+      <div id="faq-foster" style="margin-top:2rem;">
+        <h2>Foster Program Questions</h2>
+        
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">What does fostering involve?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            Fostering means providing a temporary home for cats until they find their forever families. We provide all supplies (food, litter, toys), medical care, and support. You provide love, socialization, and a safe environment. Foster periods typically range from 2 weeks to several months.
+          </p>
+        </div>
+
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">Do I need to have experience with cats to foster?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            No! We welcome first-time foster parents and provide comprehensive training and ongoing support. We'll match you with cats that fit your experience level and comfort zone.
+          </p>
+        </div>
+
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">Can I foster if I have other pets?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            Yes! Many of our foster families have other pets. We'll work with you to find foster cats that will be compatible with your existing pets and provide guidance on successful introductions.
+          </p>
+        </div>
+      </div>
+
+      <div id="faq-general" style="margin-top:2rem;">
+        <h2>General Questions</h2>
+        
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">Where are you located?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            Cats in Knead operates throughout Butler County, PA. Our cats are in foster homes throughout the county. We hold adoption events at various locations - check our Events Calendar for upcoming meet-and-greet opportunities! For more information, please contact us, or check out the contact page.
+          </p>
+        </div>
+
+        <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">How can I donate?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            We accept monetary donations through our website, checks by mail, and items from our Amazon wishlist. Donations are tax-deductible as we are a 501(c)(3) non-profit organization. Visit our Contact & Donate page for more information.
+          </p>
+        </div>
+      </div>
+       <div style="background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:1rem;">
+          <h3 style="color:#667eea;">Can I sponsor a Cat/Kitten?</h3>
+          <p style="color:#666; margin-top:.5rem; line-height:1.7;">
+            Absolutely. We are always looking for sponsors to help us cover the costs of medical care, food, and supplies for our cats. If you would like to sponsor a cat, please contact us via email at catsinknead2024@gmail.com.
+          </p>
+        </div>
+      </div>
+      <div id="faq-contact" style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:2rem;">
+        <h2 style="margin-bottom:1rem;">Still Have Questions?</h2>
+        <p style="color:#666; margin-bottom:1rem;">
+          Can't find the answer you're looking for? Fill out our contact form or give us a call - we're here to help!
+        </p>
+        
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+          <div style="flex:1; min-width:250px;">
+            <h4 style="margin-bottom:.5rem;">Contact Form Options:</h4>
+            <ul style="color:#666; padding-left:1.5rem; line-height:1.8;">
+              <li>General inquiry form</li>
+              <li>Adoption question form</li>
+              <li>Foster program inquiry</li>
+              <li>Volunteer application questions</li>
+            </ul>
+            <div style="margin-top:1rem;">
+              <a class="btn" onclick="navigateSection('contact')">Contact Us</a>
+              <a class="btn" onclick="navigateSection('forms')">View Forms</a>
+            </div>
+          </div>
+         
+      <div style="margin-top:1rem;">
+        <a class="btn" onclick="navigateSection('home')">← Back to Home</a>
+      </div>
+    </section>
+
+    <!-- ----------------------------
+         FORMS PAGE
+         ---------------------------- -->
+    <section id="forms" class="section">
+      <h1>Forms & Applications</h1>
+      
+      <p style="color:#666; margin-top:.5rem; font-size:1.05rem;">
+        Access all our application forms and information sheets in one convenient location. Simply click on the form you need or scan the QR code with your mobile device.
+      </p>
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; margin-top:2rem;">
+        
+        <!-- Form 1: Adoption Application -->
+        <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+          <div style="display:flex; gap:1rem; align-items:flex-start;">
+            <div style="flex:1;">
+              <h3 style="color:#667eea; margin-bottom:.5rem;">Adoption Application</h3>
+              <p style="color:#666; font-size:.95rem; line-height:1.6;">
+              Cats In Knead strives to find the absolute best in-home placement for our foster cats. Ideally, all of our cats will be placed into safe and loving indoor homes. We are protective of these little lives whom we have rescued and cared for, sometimes since their birth!! To that end, we ask that all potential adopters complete our application.      </p>
+            </div>
+          </div>
+          <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f0f0f0;">
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Required Information:</strong> Contact details, household information, pet history, references
+            </p>
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Processing Time:</strong> 2-3 business days
+            </p>
+            <a class="btn small" onclick="href='https://docs.google.com/forms/d/e/1FAIpQLSfHbo8G_T-cRAuxtVPBVh5G62vBqWwPfbnvETYl8oVCFLDK0Q/viewform';">Fill Out Form</a>
+            <a class="btn small" onclick="href='https://www.petfinder.com/member/us/pa/karns-city/cats-in-knead-pa1295/';">Pet Finder</a>
+
+          </div>
+        </div>
+
+        <!-- Form 2: Foster Application -->
+        <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+          <div style="display:flex; gap:1rem; align-items:flex-start;">
+            <div style="flex:1;">
+              <h3 style="color:#667eea; margin-bottom:.5rem;">Foster Parent Application</h3>
+              <p style="color:#666; font-size:.95rem; line-height:1.6;">
+                Open your heart and home to cats in need. Join our amazing network of foster families making a difference!
+              </p>
+            </div>
+          </div>
+          <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f0f0f0;">
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Required Information:</strong> Contact info, living situation, availability, experience with cats
+            </p>
+            <a class="btn small" onclick="showFosterForm()">Fill Out Form</a>
+            <a class="btn small" onclick="href='https://www.petfinder.com/member/us/pa/karns-city/cats-in-knead-pa1295/';">Pet Finder</a>
+
+
+          </div>
+        </div>
+
+        <!-- Form 3: Volunteer Application -->
+        <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+          <div style="display:flex; gap:1rem; align-items:flex-start;">
+            <div style="flex:1;">
+              <h3 style="color:#667eea; margin-bottom:.5rem;">Volunteer Application</h3>
+              <p style="color:#666; font-size:.95rem; line-height:1.6;">
+                Join our team! Help with events, social media, transportation, and more. All skill levels welcome.
+              </p>
+            </div>
+          </div>
+          <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f0f0f0;">
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Required Information:</strong> Contact info, interests, availability, skills
+            </p>
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Join Team:</strong> Please reach out to our email or click the button below: catsinknead2024@gmail.com
+            </p>
+            <a class="btn small" onclick="window.location.href='mailto:catsinknead2024@gmail.com';">Join Our Team</a>
+
+            </div>
+        </div>
+
+        <!-- Form 4: Surrender/Intake Form
+        <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+          <div style="display:flex; gap:1rem; align-items:flex-start;">
+            <div style="width:100px; height:100px; background:#f0f0f0; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <div style="font-size:12px; color:#999; text-align:center; padding:.5rem;">QR Code<br/>Placeholder</div>
+            </div>
+            <div style="flex:1;">
+              <h3 style="color:#667eea; margin-bottom:.5rem;">🐾 Cat Surrender/Intake Form</h3>
+              <p style="color:#666; font-size:.95rem; line-height:1.6;">
+                Need to rehome your cat? This form helps us understand the cat's needs and find the best placement.
+              </p>
+            </div>
+          </div>
+          <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f0f0f0;">
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Required Information:</strong> Cat details, medical history, behavior, reason for surrender
+            </p>
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Note:</strong> Space is limited - please call first
+            </p>
+            <a class="btn small" onclick="openSurrenderForm()">Fill Out Form</a>
+            <a class="btn small ghost" onclick="downloadSurrenderPDF()">Download PDF</a>
+          </div>
+        </div> -->
+
+        <!-- Form 5: Vet Clinic Appointment -->
+        <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+          <div style="display:flex; gap:1rem; align-items:flex-start;">
+            </div>
+            <div style="flex:1;">
+              <h3 style="color:#667eea; margin-bottom:.5rem;">Spay/Neuter Clinic </h3>
+              <p style="color:#666; font-size:.95rem; line-height:1.6;">
+                 The affordable spay/neuter clinic provides low-cost services for Butler County residents.
+              </p>
+            </div>
+          <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f0f0f0;">
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Required Information:</strong> Pet information, owner details, and more
+            </p>
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Details:</strong> Call (724) 679-2422 for more information on upcoming clinics
+            </p>
+            <a class="btn small ghost" onclick="navigateSection('clinic')">Learn More</a>
+          </div>
+        </div>
+
+        <!-- Form 7: Event Registration -->
+        <div style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+          <div style="display:flex; gap:1rem; align-items:flex-start;">
+            <div style="flex:1;">
+              <h3 style="color:#667eea; margin-bottom:.5rem;"> Event Registration</h3>
+              <p style="color:#666; font-size:.95rem; line-height:1.6;">
+                Register for upcoming events like Painting with Kittens, yard sales, adoption events, and more.
+              </p>
+            </div>
+          </div>
+          <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f0f0f0;">
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Events:</strong> Check our calendar for upcoming opportunities
+            </p>
+            <p style="color:#666; font-size:.9rem; margin-bottom:.8rem;">
+              <strong>Registration:</strong> Some events require advance registration. Check the calender to see if the event requires registration.
+            </p>
+            <a class="btn small" onclick="navigateSection('calendar')">View Events</a>          </div>
+        </div>
+
+      </div>
+
+      <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:2rem; border-radius:12px; text-align:center; margin-top:2rem;">
+        <h2 style="color:white; margin-bottom:.8rem;">Need Help With a Form?</h2>
+        <p style="margin-bottom:1rem; opacity:0.95;">
+          Having trouble with an application or have questions? Our team is here to help you through the process.
+        </p>
+        <div style="display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;">
+          <a class="btn" style="background:white; color:#667eea;" onclick="navigateSection('contact')">Contact Us</a>
+          <a class="btn ghost" style="border-color:white; color:#667eea;" onclick="navigateSection('faq')">View FAQs</a>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <a class="btn" onclick="navigateSection('home')">← Back to Home</a>
+      </div>
+    </section>
+
+    <!-- ----------------------------
+         CONTACT & DONATE
+         ---------------------------- -->
+    <section id="contact" class="section">
+
+      <h1>Contact Us & Support Our Mission</h1>
+
+      <div class="grid info-grid" style="margin-top:1rem;">
+        <div class="info-card">
+          <h3>Get In Touch</h3>
+          <p><strong>Email:</strong> Catsinknead2024@gmail.com</p>
+          <p><strong>Phone:</strong> (555) 228-4357</p>
+          <p<<strong><b>OFFICIAL MAILING Address:</b></strong> CATS IN KNEAD P.O. BOX 353 KARNS CITY, PA  16041</p>
+        <a class="btn small" onclick="window.location.href='mailto:catsinknead2024@gmail.com';">Contact Us</a>
+        </div>
+
+        <div class="info-card">
+          <h3>Support Our Work</h3>
+          <p>Donate to provide medical care, food, and supplies for foster families.</p>
+
+          <div style="margin-top:.6rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+            <a class="btn small" href="https://www.chewy.com/g/community-cat-network_b76903607" target="_blank" rel="noopener">Chewy Wishlist</a>
+            <a class="btn small" href="https://a.co/aSsWNgX" target="_blank" rel="noopener">Amazon Wishlist</a>
+            <a class="btn small" href="https://www.zeffy.com/en-US/organizations/cats-in-knead" target="_blank" rel="noopener">Zeffy Fundraising</a>
+          </div>
+        </div>
+      </div>
+
+    </section> <!-- end contact -->
+
+    <!-- ----------------------------
+         Profiles Container
+         (All cat profile sections are injected here by JS)
+         ---------------------------- -->
+    <div id="profiles-container"></div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer style="background:#333;color:#fff;padding:2rem 1rem;text-align:center;">
+    <div style="max-width:1200px;margin:0 auto;padding:0 1.25rem;">
+      <p style="margin-bottom:1.5rem;">2025 Cats in Knead</p>
+      
+      <!-- Admin Login Form -->
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid #555;">
+        <p style="margin-bottom:0.75rem;font-size:0.9rem;opacity:0.8;"></p>
+        <form id="footer-login-form" style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem;align-items:center;">
+          <input type="text" id="footer-username" placeholder="Username" required 
+                 style="padding:0.5rem;border-radius:6px;border:none;width:140px;font-size:0.9rem;">
+          <input type="password" id="footer-password" placeholder="Password" required 
+                 style="padding:0.5rem;border-radius:6px;border:none;width:140px;font-size:0.9rem;">
+          <button type="submit" style="padding:0.5rem 1rem;border-radius:6px;border:none;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;cursor:pointer;font-weight:600;font-size:0.9rem;">Login</button>
+        </form>
+        <p id="footer-login-error" style="color:#ff6b6b;margin-top:0.5rem;font-size:0.85rem;display:none;"></p>
+      </div>
+    </div>
+  </footer>
+
+  <!--
+    ---------------------------
+    JavaScript (Readable + commented)
+    ---------------------------
+  -->
+  <script>
+    /*
+      ----------------------------
+      App data
+      ----------------------------
+    */
+
+    // Events loaded from API
+    let events = [];
+    
+    async function loadEventsFromAPI() {
+      try {
+        const res = await fetch('/api/events?published=true');
+        const apiEvents = await res.json();
+        events = apiEvents.map(event => ({
+          id: event.id,
+          date: event.date ? new Date(event.date).toLocaleString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : 'TBA',
+          title: event.title || 'Untitled Event',
+          location: event.location ? `<b>${event.location}</b>` : '',
+          info: event.description || ''
+        }));
+        renderEvents();
+        renderAllEvents();
+      } catch (err) {
+        console.error('Failed to load events:', err);
+      }
+    }
+          
+
+    const quotes = [
+      { name: 'Allision H..', text: 'Allison joined up with fostering about 2.5 years ago and enjoys helping mamas & kittens. She and her family love choosing great names for all the cats and kittens that come into her care. Allison has created a foster space in her home that is well equipped for every cat’s “knead!” We appreciate you Allison!!' },
+      { name: 'Jodie D.', text: 'Jodie makes fostering a family affair!!  Her 3 teen boys enjoy helping out with the kittens and Jodie’s dogs provide good socialization too!  Jodie is exceptionally patient with cats that are scared and shy. She truly takes her time and shows them what love can do! Thanks to Jodie and her family!' },
+      { name: 'Katie J.', text: 'Katie has been fostering for almost 2 years now. She and her husband Bob have turned her “she-shed” into a foster cat oasis! Cats in the She-Shed Oasis have constant company and stimulation, including catios where they can watch the horses nearby! Her adult cats act as “moms” and “dads” to each new arrival. We are so lucky to have Katie and Bob involved with Cats In Knead!' }
+    ];
+
+    /*
+      ----------------------------
+      State
+      ----------------------------
+    */
+
+    let currentPage = 1;
+    let perPage = 12; // default, but controlled by <select id="perPage">
+    const profilesContainer = document.getElementById('profiles-container');
+
+    /*
+      ----------------------------
+      Utility: create a simple SVG placeholder as data URL
+      (So the site works with no external images)
+      ----------------------------
+    */
+    function svgDataUrl(label, w = 800, h = 600, bg = '#e6e6e6', fg = '#777') {
+      const svg = `
+        <svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'>
+          <rect width='100%' height='100%' fill='${bg}' />
+          <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, Arial' font-size='36' fill='${fg}'>
+            ${label}
+          </text>
+        </svg>
+      `;
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    }
+
+    /*
+      ----------------------------
+      Navigation helpers
+      ----------------------------
+    */
+
+    function setActiveNav(sectionId) {
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        const href = link.getAttribute('href') || '';
+        if (href.replace('#','') === sectionId) link.classList.add('active');
+      });
+    }
+
+    function navigateSection(sectionId, preserveHash = false) {
+      // Hide all main sections
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+      // Hide all profile sections
+      document.querySelectorAll('.profile-section').forEach(ps => ps.classList.remove('active'));
+
+      // If user asked to open a specific cat (like "cat-5"), show profile
+      if (sectionId && sectionId.startsWith('cat-')) {
+        const id = parseInt(sectionId.split('-')[1], 10);
+        showProfile(id);
+        setActiveNav(''); // no nav active while viewing a profile
+        if (!preserveHash) window.location.hash = sectionId;
+        return;
+      }
+
+      // If user asked to open a specific foster cat (like "foster-101"), show profile
+      if (sectionId && sectionId.startsWith('foster-') && sectionId.match(/^foster-\d+$/)) {
+        const id = parseInt(sectionId.split('-')[1], 10);
+        const prof = document.getElementById(`foster-${id}`);
+        if (prof) prof.classList.add('active');
+        setActiveNav(''); // no nav active while viewing a profile
+        if (!preserveHash) window.location.hash = sectionId;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // Show the requested main section
+      const target = document.getElementById(sectionId);
+      if (target) target.classList.add('active');
+
+      // Set nav active
+      setActiveNav(sectionId);
+
+      // Update hash; for cats and foster, include page param
+      if (!preserveHash) {
+        if (sectionId === 'cats') {
+          window.location.hash = `cats?page=${currentPage}`;
+        } else if (sectionId === 'foster') {
+          window.location.hash = `foster?page=${currentFosterPage}`;
+        } else {
+          window.location.hash = sectionId;
+        }
+      }
+
+      // Scroll to top smoothly
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // When the user clicks a cat card or link
+    function onCatClick(id) {
+      // remember current page so Back returns to same page
+      sessionStorage.setItem('catsPage', currentPage);
+      // navigate to profile
+      navigateSection(`cat-${id}`);
+    }
+
+    // When the user clicks "Back to Adoptables"
+    function backToCats() {
+      const last = sessionStorage.getItem('catsPage');
+      if (last) currentPage = Math.max(1, parseInt(last, 10));
+      renderCats();
+      renderPagination();
+      navigateSection('cats');
+      // update hash to reflect the page
+      window.location.hash = `cats?page=${currentPage}`;
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    /*
+      ----------------------------
+      Render events & quotes
+      ----------------------------
+    */
+    function renderEvents() {
+      const el = document.getElementById('events-area');
+      el.innerHTML = '';
+      events.slice(0, 3).forEach(ev => {
+        const d = document.createElement('div');
+        d.className = 'event';
+        d.innerHTML = `
+          <strong>${ev.date}</strong> — <em>${ev.title}</em>
+          <div style="font-size:.95rem;color:#666">${ev.location}</div>
+          <div style="font-size:.95rem;color:#666">${ev.info}</div>
+        `;
+        el.appendChild(d);
+      });
+    }
+
+    function renderQuotes() {
+      const el = document.getElementById('quotes-list');
+      el.innerHTML = '';
+      quotes.forEach(q => {
+        const d = document.createElement('div');
+        d.className = 'quote';
+        d.innerHTML = `<strong>"${q.text}"</strong><div style="font-size:.9rem;color:#666">— ${q.name}</div>`;
+        el.appendChild(d);
+      });
+    }
+
+    function openEvents() {
+      navigateSection('calendar');
+    }
+
+    function scrollToFaqSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function renderAllEvents() {
+      const el = document.getElementById('all-events-list');
+      if (!el) return;
+      el.innerHTML = '';
+      if (events.length === 0) {
+        el.innerHTML = '<p style="color:#666;">No upcoming events at this time. Check back soon!</p>';
+        return;
+      }
+      events.forEach(ev => {
+        const d = document.createElement('div');
+        d.style.cssText = 'background:#fff; padding:1.25rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:1rem;';
+        d.innerHTML = `
+          <h3 style="color:#667eea; margin-bottom:0.5rem;">${ev.title}</h3>
+          <p style="color:#888; font-size:0.95rem; margin-bottom:0.5rem;"><strong>Date:</strong> ${ev.date}</p>
+          <p style="color:#888; font-size:0.95rem; margin-bottom:0.5rem;">${ev.location}</p>
+          <p style="color:#666; line-height:1.6;">${ev.info}</p>
+        `;
+        el.appendChild(d);
+      });
+    }
+
+    /*
+      ----------------------------
+      Pagination & cats rendering
+      ----------------------------
+    */
+      let catInfo = [];
+
+      async function loadCatsFromAPI() {
+        try {
+          const res = await fetch('/api/cats?published=true');
+          const cats = await res.json();
+          catInfo = cats.map(cat => ({
+            id: cat.id,
+            name: cat.name || 'Unknown',
+            age: cat.age || 'Unknown',
+            gender: cat.gender || 'Unknown',
+            personality: cat.personality || '',
+            bio: cat.description || '',
+            medical: cat.medical || 'No medical information available.',
+            images: cat.images || [],
+            img: (cat.images && cat.images.length > 0) ? cat.images[0] : null
+          }));
+          generateCatProfiles();
+          renderCats();
+          renderPagination();
+        } catch (err) {
+          console.error('Failed to load cats:', err);
+        }
+      }
+      
+      function generateCatProfiles() {
+        const profilesContainer = document.getElementById('profiles-container');
+        if (profilesContainer) {
+          profilesContainer.innerHTML = '';
+        }
+        catInfo.forEach(cat => {
+          catProfile(cat);
+        });
+      }
+      function renderCats() {
+        const grid = document.getElementById('cat-grid');
+        grid.innerHTML = '';
+
+        perPage = parseInt(document.getElementById('perPage').value, 10) || perPage;
+
+        const start = (currentPage - 1) * perPage;
+        const pageCats = catInfo.slice(start, start + perPage);
+
+        sessionStorage.setItem('catsPage', currentPage);
+
+        pageCats.forEach(cat => {
+          const card = document.createElement('div');
+          card.className = 'cat-card';
+
+          card.innerHTML = `
+            <div class="cat-image">
+              <a href="#cat-${cat.id}" onclick="onCatClick(${cat.id})" style="display:block;height:100%;width:100%">
+                <img alt="${cat.name}" src="${cat.img || svgDataUrl(cat.name)}" />
+              </a>
+            </div>
+
+            <div class="cat-info">
+              <div class="cat-name">${cat.name}</div>
+              <div class="cat-details"><strong>Age:</strong> ${cat.age} • <strong>Gender:</strong> ${cat.gender}</div>
+              <div style="color:#666; font-size:.95rem;">${cat.bio}</div>
+
+              <div class="cat-actions">
+                <a class="btn" href="#cat-${cat.id}" onclick="onCatClick(${cat.id})">View Profile</a>
+                <button class="btn ghost" onclick="applyAdopt(${cat.id})">Apply to Adopt</button>
+                <button class="btn ghost" onclick="openMedical(${cat.id})">Medical Info</button>
+              </div>
+            </div>
+          `;
+
+          grid.appendChild(card);
+        });
+      }
+
+    function renderPagination() {
+      const pag = document.getElementById('pagination');
+      pag.innerHTML = '';
+
+      const totalPages = Math.max(1, Math.ceil(catInfo.length / perPage));
+      for (let p = 1; p <= totalPages; p++) {
+        const b = document.createElement('button');
+        b.className = 'page-btn' + (p === currentPage ? ' active' : '');
+        b.textContent = p;
+        b.onclick = () => {
+          currentPage = p;
+          renderCats();
+          renderPagination();
+          window.scrollTo({ top: 120, behavior: 'smooth' });
+          window.location.hash = `cats?page=${currentPage}`;
+        };
+        pag.appendChild(b);
+      }
+    }
+
+    function nextPage() {
+      const totalPages = Math.max(1, Math.ceil(catInfo.length / perPage));
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderCats();
+        renderPagination();
+        window.location.hash = `cats?page=${currentPage}`;
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderCats();
+        renderPagination();
+        window.location.hash = `cats?page=${currentPage}`;
+      }
+    }
+
+    function changePerPage() {
+      perPage = parseInt(document.getElementById('perPage').value, 10);
+      currentPage = 1;
+      renderCats();
+      renderPagination();
+      window.location.hash = `cats?page=${currentPage}`;
+    }
+
+    /*
+      ----------------------------
+      Profiles: create and show
+      All profile sections are generated and inserted into #profiles-container
+      ----------------------------
+    */
+
+      function catProfile(cat) {
+        const images = cat.images || [];
+        const defaultPhoto = svgDataUrl(cat.name);
+        //profilesContainer.innerHTML = ''; // Clear previous profile
+
+        const sec = document.createElement('section');
+        sec.id = `cat-${cat.id}`;
+        sec.className = 'section profile-section';
+        sec.setAttribute('aria-labelledby', `cat-${cat.id}-heading`);
+
+        sec.innerHTML = `
+          <div class="profile">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <h1 id="cat-${cat.id}-heading">${cat.name}</h1>
+              <div>
+                <a class="btn ghost small" href="#cats" onclick="backToCats()">Back to Adoptables</a>
+              </div>
+            </div>
+
+            <div class="meta" style="margin-top:.4rem;">
+              <div><strong>Age:</strong> ${cat.age} • <strong>Gender:</strong> ${cat.gender} • ${cat.personality}</div>
+            </div>
+
+
+            <div class="gallery" style="margin-top:1rem;">
+              ${images.length > 0
+                ? images.slice(0, 3).map((url, index) => `<img src="${url}" alt="${cat.name} photo ${index + 1}" />`).join('')
+                : `<img src="${defaultPhoto}" alt="${cat.name}" />`}
+            </div>
+
+            <div class="section-block">
+              <h2>About ${cat.name}</h2>
+              <p style="color:#666;">${cat.bio}</p>
+
+              <div style="margin-top:.6rem; display:flex; gap:.6rem; flex-wrap:wrap;">
+                <a class="btn" href="#" onclick="applyAdopt(${cat.id}); return false;">Apply to Adopt</a>
+                <button class="btn ghost" onclick="scrollToMedical(${cat.id})">Medical Info</button>
+                <button class="btn ghost" onclick="toggleMorePhotos(this, ${cat.id})">More Photos</button>
+              </div>
+            </div>
+
+            <div id="medical-${cat.id}" class="section-block">
+              <h3>Medical Info</h3>
+              <p style="color:#666;">${cat.medical}</p>
+            </div>
+          </div>
+        `;
+
+        profilesContainer.appendChild(sec);
+      }
+
+    function showProfile(id) {
+      // hide main sections and other profiles
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.profile-section').forEach(ps => ps.classList.remove('active'));
+
+      const prof = document.getElementById(`cat-${id}`);
+      if (prof) prof.classList.add('active');
+
+      // clear nav active states
+      setActiveNav('');
+      // scroll top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToMedical(id) {
+      const el = document.getElementById(`medical-${id}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+      let currentCatPhotos = [];
+      let currentGalleryIndex = 0;
+
+      function toggleMorePhotos(btn, id) {
+        openGallery(id);
+      }
+
+      function openGallery(catId) {
+        const cat = catInfo.find(c => c.id === catId);
+        const photos = cat ? cat.images : [];
+        if (!photos || photos.length === 0) {
+          alert("No photos available for this cat.");
+          return;
+        }
+
+        currentCatPhotos = photos;
+        currentGalleryIndex = 0;
+        updateGalleryDisplay();
+
+        document.getElementById("photoGalleryModal").style.display = "flex";
+      }
+
+      function closeGallery() {
+        document.getElementById("photoGalleryModal").style.display = "none";
+      }
+
+      function updateGalleryDisplay() {
+        const mainImg = document.getElementById("galleryMainImage");
+        const thumbsDiv = document.getElementById("galleryThumbs");
+
+        mainImg.src = currentCatPhotos[currentGalleryIndex];
+
+        thumbsDiv.innerHTML = currentCatPhotos
+          .map(
+            (url, i) => `<img src="${url}" class="thumb ${i === currentGalleryIndex ? "active" : "" }" onclick="jumpToGalleryPhoto(${i})">`
+          )
+          .join("");
+      }
+
+      function nextGalleryPhoto() {
+        currentGalleryIndex = (currentGalleryIndex + 1) % currentCatPhotos.length;
+        updateGalleryDisplay();
+      }
+
+      function prevGalleryPhoto() {
+        currentGalleryIndex = (currentGalleryIndex - 1 + currentCatPhotos.length) % currentCatPhotos.length;
+        updateGalleryDisplay();
+      }
+
+      function jumpToGalleryPhoto(i) {
+        currentGalleryIndex = i;
+        updateGalleryDisplay();
+      }
+
+      
+
+    /*
+      ----------------------------
+      Actions: apply, medical, forms etc.
+      Replace demo behaviors with real links or modal logic
+      ----------------------------
+    */
+    function applyAdopt(id) {
+      // Replace with your adoption form link or modal
+      const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSfHbo8G_T-cRAuxtVPBVh5G62vBqWwPfbnvETYl8oVCFLDK0Q/viewform`;
+      window.open(formUrl, '_blank');
+    }
+
+    function openMedical(id) {
+      // navigate to profile and scroll to medical
+      navigateSection(`cat-${id}`);
+      setTimeout(() => scrollToMedical(id), 250);
+    }
+
+    function showFosterForm() {
+      // Replace with real foster application
+      window.open('https://docs.google.com/forms/d/1HDYdnT1O7vEaMzPxKokgJvSU7ul4cX2kUlmWBYJoXhs/edit?usp=drivesdk');
+    }
+
+    function openFosterGallery() {
+      navigateSection('foster');
+    }
+
+    /*
+      ----------------------------
+      FOSTER CATS - Data and Functions
+      ----------------------------
+    */
+
+    // Foster cat data (loaded from API)
+    let fosterCatInfo = [];
+
+    let currentFosterPage = 1;
+    let fosterPerPage = 12;
+    async function loadFostersFromAPI() {
+      try {
+        const res = await fetch('/api/fosters?published=true');
+        const fosters = await res.json();
+        fosterCatInfo = fosters.map(foster => ({
+          id: foster.id,
+          name: foster.name || 'Unknown',
+          age: foster.age || 'Unknown',
+          gender: foster.gender || 'Unknown',
+          personality: foster.personality || '',
+          bio: foster.description || '',
+          medical: foster.medical || 'No medical information available.',
+          images: foster.images || [],
+          img: (foster.images && foster.images.length > 0) ? foster.images[0] : (foster.image || null)
+        }));
+        generateFosterProfiles();
+        renderFosterCats();
+        renderFosterPagination();
+      } catch (err) {
+        console.error('Failed to load fosters:', err);
+      }
+    }
+    
+    function generateFosterProfiles() {
+      const profilesContainer = document.getElementById('profiles-container');
+      if (!profilesContainer) return;
+      
+      fosterCatInfo.forEach(foster => {
+        const existingProfile = document.getElementById(`foster-${foster.id}`);
+        if (existingProfile) existingProfile.remove();
+        
+        const defaultPhoto = svgDataUrl(foster.name);
+        const images = foster.images || [];
+        
+        const sec = document.createElement('section');
+        sec.id = `foster-${foster.id}`;
+        sec.className = 'section profile-section';
+        sec.setAttribute('aria-labelledby', `foster-${foster.id}-heading`);
+        
+        sec.innerHTML = `
+          <div class="profile">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <h1 id="foster-${foster.id}-heading">${foster.name}</h1>
+              <div>
+                <a class="btn ghost small" href="#foster" onclick="backToFosterCats()">Back to Foster Cats</a>
+              </div>
+            </div>
+            <div class="meta" style="margin-top:.4rem;">
+              <div><strong>Age:</strong> ${foster.age} • <strong>Gender:</strong> ${foster.gender} • ${foster.personality}</div>
+            </div>
+            <div class="gallery" style="margin-top:1rem;">
+              ${images.length > 0 
+                ? images.slice(0, 3).map((url, index) => `<img src="${url}" alt="${foster.name} photo ${index + 1}" />`).join('')
+                : `<img src="${foster.img || defaultPhoto}" alt="${foster.name}" />`}
+            </div>
+            <div class="section-block">
+              <h2>About ${foster.name}</h2>
+              <p style="color:#666;">${foster.bio}</p>
+              <div style="margin-top:.6rem; display:flex; gap:.6rem; flex-wrap:wrap;">
+                <a class="btn" href="#" onclick="applyFoster(${foster.id}); return false;">Apply to Foster</a>
+                <button class="btn ghost" onclick="scrollToMedical(${foster.id})">Medical Info</button>
+              </div>
+            </div>
+            <div id="medical-${foster.id}" class="section-block">
+              <h3>Medical Info</h3>
+              <p style="color:#666;">${foster.medical}</p>
+            </div>
+          </div>
+        `;
+        
+        profilesContainer.appendChild(sec);
+      });
+    }
+
+    function renderFosterCats() {
+      const grid = document.getElementById('foster-grid');
+      grid.innerHTML = '';
+
+      fosterPerPage = parseInt(document.getElementById('fosterPerPage').value, 10) || fosterPerPage;
+
+      const start = (currentFosterPage - 1) * fosterPerPage;
+      const pageCats = fosterCatInfo.slice(start, start + fosterPerPage);
+
+      sessionStorage.setItem('fosterPage', currentFosterPage);
+
+      pageCats.forEach(cat => {
+        const card = document.createElement('div');
+        card.className = 'cat-card';
+
+        card.innerHTML = `
+          <div class="cat-image">
+            <a href="#foster-${cat.id}" onclick="onFosterCatClick(${cat.id})" style="display:block;height:100%;width:100%">
+              <img alt="${cat.name}" src="${cat.img || svgDataUrl(cat.name)}" />
+            </a>
+          </div>
+
+          <div class="cat-info">
+            <div class="cat-name">${cat.name}</div>
+            <div class="cat-details"><strong>Age:</strong> ${cat.age} • <strong>Gender:</strong> ${cat.gender}</div>
+            <div style="color:#666; font-size:.95rem;">${cat.bio}</div>
+
+            <div class="cat-actions">
+              <a class="btn" href="#foster-${cat.id}" onclick="onFosterCatClick(${cat.id})">View Profile</a>
+              <button class="btn ghost" onclick="applyFoster(${cat.id})">Apply to Foster</button>
+              <button class="btn ghost" onclick="openFosterMedical(${cat.id})">Medical Info</button>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function renderFosterPagination() {
+      const pag = document.getElementById('foster-pagination');
+      pag.innerHTML = '';
+
+      const totalPages = Math.max(1, Math.ceil(fosterCatInfo.length / fosterPerPage));
+      for (let p = 1; p <= totalPages; p++) {
+        const b = document.createElement('button');
+        b.className = 'page-btn' + (p === currentFosterPage ? ' active' : '');
+        b.textContent = p;
+        b.onclick = () => {
+          currentFosterPage = p;
+          renderFosterCats();
+          renderFosterPagination();
+          window.scrollTo({ top: 120, behavior: 'smooth' });
+          window.location.hash = `foster?page=${currentFosterPage}`;
+        };
+        pag.appendChild(b);
+      }
+    }
+
+    function nextFosterPage() {
+      const totalPages = Math.max(1, Math.ceil(fosterCatInfo.length / fosterPerPage));
+      if (currentFosterPage < totalPages) {
+        currentFosterPage++;
+        renderFosterCats();
+        renderFosterPagination();
+        window.location.hash = `foster?page=${currentFosterPage}`;
+      }
+    }
+
+    function prevFosterPage() {
+      if (currentFosterPage > 1) {
+        currentFosterPage--;
+        renderFosterCats();
+        renderFosterPagination();
+        window.location.hash = `foster?page=${currentFosterPage}`;
+      }
+    }
+
+    function changeFosterPerPage() {
+      fosterPerPage = parseInt(document.getElementById('fosterPerPage').value, 10);
+      currentFosterPage = 1;
+      renderFosterCats();
+      renderFosterPagination();
+      window.location.hash = `foster?page=${currentFosterPage}`;
+    }
+
+
+    function onFosterCatClick(id) {
+      sessionStorage.setItem('fosterPage', currentFosterPage);
+      navigateSection(`foster-${id}`);
+    }
+
+    function backToFosterCats() {
+      const last = sessionStorage.getItem('fosterPage');
+      if (last) currentFosterPage = Math.max(1, parseInt(last, 10));
+      renderFosterCats();
+      renderFosterPagination();
+      navigateSection('foster');
+      window.location.hash = `foster?page=${currentFosterPage}`;
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function applyFoster(id) {
+      const formUrl = `https://example.com/foster-form?cat=${encodeURIComponent('Foster Cat ' + id)}`;
+      window.open(formUrl, '_blank');
+    }
+
+    function openFosterMedical(id) {
+      navigateSection(`foster-${id}`);
+      setTimeout(() => scrollToMedical(id), 250);
+    }
+
+    // Foster cat profiles with galleries
+    const fosterCatProfiles = {
+      101: {
+        id: 101,
+        name: "Abby",
+        age: "Age",
+        gender: "N/A",
+        personality: "Playful Independent Curious",
+        bio: "Custom description for any cat.",
+        medical: "Abby's medical information would go here",
+        photos: [
+          "Foster/Abby.png"
+        ]
+      },
+      102: {
+        id: 102,
+        name: "Max",
+        age: "3 years",
+        gender: "Male",
+        personality: "Affectionate Gentle Loving",
+        bio: "Max is a wonderful, affectionate cat who would do great in a calm foster home. He loves to be petted and will purr contentedly in your lap. He's great with children and other pets.",
+        medical: "Max is neutered, vaccinated, and microchipped. He's in excellent health.",
+        photos: [
+          "images/cat4.jpg",
+          "images/cat5.jpg"
+        ]
+      },
+      103: {
+        id: 103,
+        name: "Mittens",
+        age: "8 years",
+        gender: "Female",
+        personality: "Gentle Calm Quiet",
+        bio: "Mittens is a sweet senior cat who enjoys the quiet life. She's perfect for a peaceful foster home where she can relax and enjoy her golden years. She's very gentle and loving.",
+        medical: "Mittens requires a special diet due to digestive sensitivity. Otherwise, she's healthy for her age.",
+        photos: [
+          "images/cat5.jpg",
+          "images/cat6.jpg"
+        ]
+      }
+    };
+
+    // Create foster cat profile sections
+    function createFosterProfile(cat) {
+      const sec = document.createElement('section');
+      sec.id = `foster-${cat.id}`;
+      sec.className = 'section profile-section';
+      sec.setAttribute('aria-labelledby', `foster-${cat.id}-heading`);
+
+      sec.innerHTML = `
+        <div class="profile">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h1 id="foster-${cat.id}-heading">${cat.name}</h1>
+            <div>
+              <a class="btn ghost small" href="#foster" onclick="backToFosterCats()">Back to Foster Cats</a>
+            </div>
+          </div>
+
+          <div class="meta" style="margin-top:.4rem;">
+            <div><strong>Age:</strong> ${cat.age} • <strong>Gender:</strong> ${cat.gender} • ${cat.personality}</div>
+          </div>
+
+          <div class="gallery" style="margin-top:1rem;">
+            ${cat.photos.map((url, index) => `<img src="${url}" alt="${cat.name} photo ${index + 1}" />`).join('')}
+          </div>
+
+          <div class="section-block">
+            <h2>About ${cat.name}</h2>
+            <p style="color:#666;">${cat.bio}</p>
+
+            <div style="margin-top:.6rem; display:flex; gap:.6rem; flex-wrap:wrap;">
+              <a class="btn" href="#" onclick="applyFoster(${cat.id}); return false;">Apply to Foster</a>
+              <button class="btn ghost" onclick="scrollToMedical(${cat.id})">Medical Info</button>
+              <button class="btn ghost" onclick="toggleMorePhotos(this, ${cat.id})">More Photos</button>
+            </div>
+          </div>
+
+          <div id="medical-${cat.id}" class="section-block">
+            <h3>Medical Info</h3>
+            <p style="color:#666;">${cat.medical}</p>
+          </div>
+        </div>
+      `;
+
+      profilesContainer.appendChild(sec);
+    }
+
+    // Create foster profiles
+    Object.values(fosterCatProfiles).forEach(cat => createFosterProfile(cat));
+
+    function openAppointment() {
+      alert('Open appointment booking (link to scheduling system).');
+    }
+
+    function openContactForm() {
+      alert('Open contact form (replace with your form).');
+    }
+
+    function donateAmount(amount) {
+      alert('Open payment for $' + amount + ' (demo).');
+    }
+
+    function donateCustom() {
+      //link to donation page
+    }
+
+    /*
+      ----------------------------
+      Foster gallery (sample)
+      ---------------------------- */
+      
+ 
+
+
+    /*
+      ----------------------------
+      Hash handling (deep links + back/forward)
+      ----------------------------
+    */
+    function handleHashOnLoad() {
+      const raw = window.location.hash.replace('#','');
+
+      // No hash → default to home
+      if (!raw) {
+        navigateSection('home', true);
+        return;
+      }
+
+      // If user linked to cats?page=X
+      if (raw.startsWith('cats')) {
+        const m = raw.match(/page=(\d+)/);
+        if (m) currentPage = Math.max(1, parseInt(m[1], 10));
+        renderCats();
+        renderPagination();
+        navigateSection('cats', true);
+        return;
+      }
+
+      // If user linked to foster?page=X
+      if (raw.startsWith('foster') && raw.match(/^foster(\?page=\d+)?$/)) {
+        const m = raw.match(/page=(\d+)/);
+        if (m) currentFosterPage = Math.max(1, parseInt(m[1], 10));
+        renderFosterCats();
+        renderFosterPagination();
+        navigateSection('foster', true);
+        return;
+      }
+
+      // If linking to a profile e.g. cat-5
+      if (raw.startsWith('cat-') && raw.match(/^cat-\d+$/)) {
+        const id = parseInt(raw.split('-')[1], 10);
+        // restore last viewed cats page if stored
+        const last = sessionStorage.getItem('catsPage');
+        if (last) currentPage = parseInt(last, 10);
+        renderCats();
+        renderPagination();
+        navigateSection(raw, true);
+        return;
+      }
+
+      // If linking to a foster cat profile e.g. foster-101
+      if (raw.startsWith('foster-') && raw.match(/^foster-\d+$/)) {
+        const id = parseInt(raw.split('-')[1], 10);
+        // restore last viewed foster page if stored
+        const last = sessionStorage.getItem('fosterPage');
+        if (last) currentFosterPage = parseInt(last, 10);
+        renderFosterCats();
+        renderFosterPagination();
+        navigateSection(raw, true);
+        return;
+      }
+
+      // Otherwise attempt to open that main section
+      if (document.getElementById(raw)) {
+        navigateSection(raw, true);
+      } else {
+        navigateSection('home', true);
+      }
+    }
+
+    /*
+      ----------------------------
+      Initialization
+      ----------------------------
+    */
+    function init() {
+      // Ensure perPage reflects the select value
+      perPage = parseInt(document.getElementById('perPage').value, 10) || perPage;
+
+      // Build profile sections
+      // createProfiles();
+
+      // Load cats from API (will render when loaded)
+      loadCatsFromAPI();
+
+      // Load foster cats from API (will render when loaded)
+      loadFostersFromAPI();
+
+      // Load events from API (will render when loaded)
+      loadEventsFromAPI();
+      
+      // Render quotes
+      renderQuotes();
+
+      // Attach minor nav link handlers to prevent default anchor jump (improves UX)
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = link.getAttribute('href').replace('#','');
+          navigateSection(id);
+        });
+      });
+
+      // Load initial view based on hash (if present)
+      handleHashOnLoad();
+    }
+
+    // Listen to hash changes (user using back/forward)
+    window.addEventListener('hashchange', () => {
+      handleHashOnLoad();
+    });
+
+    // Load foster parent info cards dynamically from the database
+    async function loadFosterParents() {
+      const grid = document.getElementById('foster-parents-grid');
+      if (!grid) return;
+      try {
+        const res = await fetch('/api/foster-parents?published=true');
+        const fosterParents = await res.json();
+        if (!fosterParents || fosterParents.length === 0) {
+          grid.innerHTML = '<p style="text-align:center;color:#666;grid-column:1/-1;">No foster parent profiles available yet. Check back soon!</p>';
+          return;
+        }
+        grid.innerHTML = fosterParents.map(fp => {
+          const imgHtml = fp.image
+            ? `<div style="width:100%;height:200px;overflow:hidden;border-radius:8px;margin-bottom:.8rem;background:#f0f0f0;"><img src="${fp.image}" alt="${fp.name}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
+            : `<div style="width:100%;height:200px;background:#f0f0f0;border-radius:8px;margin-bottom:.8rem;display:flex;align-items:center;justify-content:center;"><span style="color:#aaa;font-size:2rem;">No Photo</span></div>`;
+          const durationHtml = fp.fosterDuration
+            ? `<p style="color:#667eea;font-size:.8rem;font-weight:600;margin:.3rem 0;">Fostering for: ${fp.fosterDuration}</p>`
+            : '';
+          return `
+            <div class="info-card">
+              ${imgHtml}
+              <strong>${fp.name}</strong>
+              ${durationHtml}
+              <p style="color:#666;margin-top:.4rem;font-size:.88rem;">${fp.statement || ''}</p>
+            </div>`;
+        }).join('');
+      } catch (err) {
+        grid.innerHTML = '';
+      }
+    }
+
+    // Start when DOM ready
+    document.addEventListener('DOMContentLoaded', () => { init(); loadFosterParents(); loadHomeImages(); loadEventGallery(); });
+
+    async function loadHomeImages() {
+      try {
+        const r1 = await fetch('/api/sections/volunteer_photo');
+        if (r1.ok) {
+          const s = await r1.json();
+          if (s && s.content) {
+            const img = document.getElementById('volunteer-photo-img');
+            const ph  = document.getElementById('volunteer-photo-placeholder');
+            if (img) { img.src = s.content; img.style.display = 'block'; }
+            if (ph) ph.style.display = 'none';
+          }
+        }
+      } catch (e) {}
+      try {
+        const r2 = await fetch('/api/sections/event_flyer');
+        if (r2.ok) {
+          const s = await r2.json();
+          if (s && s.content) {
+            const img = document.getElementById('event-flyer-img');
+            const ph  = document.getElementById('event-flyer-placeholder');
+            if (img) { img.src = s.content; img.style.display = 'block'; }
+            if (ph) ph.style.display = 'none';
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function loadEventGallery() {
+      const grid = document.getElementById('event-gallery');
+      const empty = document.getElementById('event-gallery-empty');
+      if (!grid) return;
+      try {
+        const res = await fetch('/api/photos?published=true');
+        if (!res.ok) return;
+        const photos = (await res.json()).filter(p => (p.category || '') === 'event');
+        grid.innerHTML = '';
+        if (photos.length === 0) {
+          if (empty) empty.style.display = 'block';
+          return;
+        }
+        if (empty) empty.style.display = 'none';
+        photos.forEach(p => {
+          const src = p.filename.startsWith('/') ? p.filename : ('/uploads/' + p.filename);
+          const card = document.createElement('div');
+          card.style.cssText = 'background:#f5f5f5; border-radius:10px; padding:0.5rem; display:flex; flex-direction:column; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.05);';
+          card.innerHTML =
+            '<div style="width:100%; height:240px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:6px; overflow:hidden;">' +
+              '<img src="' + src + '" alt="' + (p.caption || 'Event photo') + '" style="max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain;">' +
+            '</div>' +
+            (p.caption ? '<div style="margin-top:0.5rem; color:#555; font-size:0.9rem; text-align:center;">' + p.caption + '</div>' : '');
+          grid.appendChild(card);
+        });
+      } catch (e) {}
+    }
+
+    //for filtering system
+
+    // Footer Admin Login Form Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const footerLoginForm = document.getElementById('footer-login-form');
+      const footerLoginError = document.getElementById('footer-login-error');
+      
+      if (footerLoginForm) {
+        footerLoginForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const username = document.getElementById('footer-username').value;
+          const password = document.getElementById('footer-password').value;
+          
+          footerLoginError.style.display = 'none';
+          
+          try {
+            const res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, password })
+            });
+            
+            const data = await res.json();
+            
+            if (data.success) {
+              window.location.href = '/admin.html';
+            } else {
+              footerLoginError.textContent = data.error || 'Login failed';
+              footerLoginError.style.display = 'block';
+            }
+          } catch (err) {
+            footerLoginError.textContent = 'Connection error. Please try again.';
+            footerLoginError.style.display = 'block';
+          }
+        });
+      }
+    });
+  </script>
+    
+
+</body>
+</html>
