@@ -1,0 +1,41 @@
+name: Node.js CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      # Starts a temporary PostgreSQL database for your server
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: mydatabase
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run Server or Tests
+      run: npm start &  # Runs the server in the background
+      env:
+        DATABASE_URL: postgres://user:password@localhost:5432/mydatabase
+        SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+        PORT: 3000
