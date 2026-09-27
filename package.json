@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server/index.ts",
-    "start": "npx drizzle-kit push && tsx server/index.ts",
+    "start": "npx drizzle-kit push --config=drizzle.config.ts && tsx server/index.ts",
     "check": "tsc --noEmit"
   },
   "dependencies": {
