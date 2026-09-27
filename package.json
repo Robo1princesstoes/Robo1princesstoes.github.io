@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "server/index.ts",
   "type": "module",
-  "scripts": {
-    "dev": "tsx server/index.ts",
-    "start": "npx drizzle-kit push --config=drizzle.config.ts && tsx server/index.ts",
-    "check": "tsc --noEmit"
-  },
+"scripts": {
+  "dev": "tsx server/index.ts",
+  "build": "npx drizzle-kit push --config=drizzle.config.ts",
+  "start": "tsx server/index.ts",
+  "check": "tsc --noEmit"
+},
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "connect-pg-simple": "^10.0.0",
