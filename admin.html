@@ -175,12 +175,19 @@
       position: relative;
     }
     
-    .admin-card img {
+    .admin-card-photo {
       width: 100%;
       height: 160px;
-      object-fit: cover;
+      overflow: hidden;
       border-radius: 8px;
       margin-bottom: 0.75rem;
+      background: #f0f0f0;
+    }
+    .admin-card-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     
     .admin-card h3 {
@@ -421,9 +428,11 @@
       <div class="admin-nav">
         <button onclick="showPanel('dashboard')" class="active" data-panel="dashboard">Dashboard</button>
         <button onclick="showPanel('cats')" data-panel="cats">Cats</button>
-        <button onclick="showPanel('fosters')" data-panel="fosters">Fosters</button>
+        <button onclick="showPanel('fosters')" data-panel="fosters">Foster Cats</button>
+        <button onclick="showPanel('fosterparents')" data-panel="fosterparents">Foster Parents</button>
         <button onclick="showPanel('events')" data-panel="events">Events</button>
         <button onclick="showPanel('photos')" data-panel="photos">Photos</button>
+        <button onclick="showPanel('pagebuilder')" data-panel="pagebuilder">Page Builder</button>
         <button onclick="showPanel('settings')" data-panel="settings">Settings</button>
         <button onclick="logout()" class="btn-danger" style="margin-left: 1rem;">Logout</button>
       </div>
@@ -439,7 +448,11 @@
           </div>
           <div class="stat-card">
             <div class="number" id="stat-fosters">0</div>
-            <div class="label">Fosters</div>
+            <div class="label">Foster Cats</div>
+          </div>
+          <div class="stat-card">
+            <div class="number" id="stat-fosterparents">0</div>
+            <div class="label">Foster Parents</div>
           </div>
           <div class="stat-card">
             <div class="number" id="stat-events">0</div>
@@ -455,7 +468,8 @@
           <h3>Quick Actions</h3>
           <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
             <button class="btn" onclick="showPanel('cats'); openCatModal()">Add New Cat</button>
-            <button class="btn" onclick="showPanel('fosters'); openFosterModal()">Add New Foster</button>
+            <button class="btn" onclick="showPanel('fosters'); openFosterModal()">Add Foster Cat</button>
+            <button class="btn" onclick="showPanel('fosterparents'); openFosterParentModal()">Add Foster Parent</button>
             <button class="btn" onclick="showPanel('events'); openEventModal()">Add New Event</button>
             <button class="btn btn-success" onclick="publishAll()">Publish All Changes</button>
           </div>
@@ -474,12 +488,23 @@
       </div>
 
       <div id="panel-fosters" class="panel">
-        <h2>Manage Foster Parents</h2>
-        <p>Add and manage foster parent profiles.</p>
+        <h2>Manage Foster Cats</h2>
+        <p>Add and manage cats currently in foster care.</p>
         <div class="card-grid" id="fosters-grid">
           <div class="admin-card add-card" onclick="openFosterModal()">
             <span>+</span>
-            <p>Add New Foster</p>
+            <p>Add Foster Cat</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-fosterparents" class="panel">
+        <h2>Manage Foster Parents</h2>
+        <p>Add and manage foster parent info cards shown on the Foster Parents page.</p>
+        <div class="card-grid" id="fosterparents-grid">
+          <div class="admin-card add-card" onclick="openFosterParentModal()">
+            <span>+</span>
+            <p>Add Foster Parent</p>
           </div>
         </div>
       </div>
@@ -497,15 +522,108 @@
 
       <div id="panel-photos" class="panel">
         <h2>Photo Gallery</h2>
-        <p>Upload and manage photos for the website.</p>
-        <div style="margin-bottom: 1rem;">
-          <input type="file" id="photo-upload" multiple accept="image/*" onchange="uploadPhotos(this.files)">
+        <p>Upload and manage photos for the website. Photos in the "Event" category appear on the Events page gallery.</p>
+
+        <div style="background:#f9f9f9; padding:1rem 1.25rem; border-radius:8px; margin:1rem 0; max-width:700px;">
+          <h3 style="margin-bottom:0.75rem;">Upload Photos</h3>
+          <div class="form-group">
+            <label for="photo-upload-category">Category</label>
+            <select id="photo-upload-category">
+              <option value="event">Event (shown on Events page gallery)</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="photo-upload-caption">Caption (optional, applied to all uploaded photos in this batch)</label>
+            <input type="text" id="photo-upload-caption" placeholder="e.g., Painting with Kittens 2025">
+          </div>
+          <div class="form-group">
+            <label>Choose images (you can select multiple)</label>
+            <input type="file" id="photo-upload" multiple accept="image/*" style="display:none;" onchange="uploadPhotos(this.files)">
+            <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="btn" onclick="document.getElementById('photo-upload').click()">Upload Photos</button>
+              <span id="photo-upload-status" style="color:#666; font-size:0.9rem;"></span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem; display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <strong>Filter:</strong>
+          <button type="button" class="btn small" onclick="setPhotoFilter('all')">All</button>
+          <button type="button" class="btn small" onclick="setPhotoFilter('event')">Event</button>
+          <button type="button" class="btn small" onclick="setPhotoFilter('general')">General</button>
         </div>
         <div class="card-grid" id="photos-grid"></div>
       </div>
 
+      <div id="panel-pagebuilder" class="panel">
+        <h2>Visual Page Builder</h2>
+        <p>Drag and drop sections to customize your website. Edit content, preview changes, and publish when ready.</p>
+        
+        <div style="display:flex; gap:1rem; margin-top:1rem; margin-bottom:1rem;">
+          <button class="btn" onclick="previewPageBuilder()">Preview Site</button>
+          <button class="btn btn-success" onclick="savePageBuilder()">Save Changes</button>
+        </div>
+
+        <div style="display:flex; gap:2rem; margin-top:1.5rem;">
+          <div style="flex:1; min-width:300px;">
+            <h3 style="margin-bottom:1rem;">Website Sections</h3>
+            <p style="color:#666; font-size:0.9rem; margin-bottom:1rem;">Click on a section to edit its content. Drag sections to reorder.</p>
+            
+            <div id="page-sections-list" style="display:flex; flex-direction:column; gap:0.75rem;">
+            </div>
+          </div>
+          
+          <div style="flex:1; min-width:400px;">
+            <h3 style="margin-bottom:1rem;">Edit Section</h3>
+            <div id="section-editor" style="background:#f9f9f9; padding:1.5rem; border-radius:10px; min-height:300px;">
+              <p style="color:#999; text-align:center;">Select a section to edit</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div id="panel-settings" class="panel">
         <h2>Settings</h2>
+
+        <div style="max-width: 600px; margin-bottom: 2.5rem;">
+          <h3>Upcoming Event Flyer (Home Page)</h3>
+          <p style="color:#666; font-size:0.9rem; margin-bottom:1rem;">Upload, change, or delete the single flyer image shown next to the "Upcoming Events" list on the home page.</p>
+          <div id="event-flyer-message" style="display:none;"></div>
+          <div id="event-flyer-current" style="margin-bottom:1rem;">
+            <div style="background:#f5f5f5; border-radius:8px; padding:1rem; min-height:160px; display:flex; align-items:center; justify-content:center;">
+              <span style="color:#999;">Loading current flyer…</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="event-flyer-input">Choose new image (JPG, PNG, GIF, WEBP — up to 10 MB)</label>
+            <input type="file" id="event-flyer-input" accept="image/*">
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button type="button" class="btn" onclick="uploadEventFlyer()">Upload / Replace</button>
+            <button type="button" class="btn btn-danger" onclick="deleteEventFlyer()">Delete Flyer</button>
+          </div>
+        </div>
+
+        <div style="max-width: 600px; margin-bottom: 2.5rem;">
+          <h3>Volunteer Team Photo (Home Page)</h3>
+          <p style="color:#666; font-size:0.9rem; margin-bottom:1rem;">Upload, change, or delete the photo shown in the "Volunteer With Us" section on the home page.</p>
+          <div id="volunteer-photo-message" style="display:none;"></div>
+          <div id="volunteer-photo-current" style="margin-bottom:1rem;">
+            <div style="background:#f5f5f5; border-radius:8px; padding:1rem; min-height:160px; display:flex; align-items:center; justify-content:center;">
+              <span style="color:#999;">Loading current photo…</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="volunteer-photo-input">Choose new image (JPG, PNG, GIF, WEBP — up to 10 MB)</label>
+            <input type="file" id="volunteer-photo-input" accept="image/*">
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button type="button" class="btn" onclick="uploadVolunteerPhoto()">Upload / Replace</button>
+            <button type="button" class="btn btn-danger" onclick="deleteVolunteerPhoto()">Delete Photo</button>
+          </div>
+        </div>
+
         <div style="max-width: 500px;">
           <h3>Change Password</h3>
           <div id="password-message" style="display: none;"></div>
@@ -575,6 +693,14 @@
           <textarea id="cat-description" placeholder="Tell us about this cat..."></textarea>
         </div>
         <div class="form-group">
+          <label for="cat-personality">Personality</label>
+          <input type="text" id="cat-personality" placeholder="e.g., Playful, Independent, Quiet">
+        </div>
+        <div class="form-group">
+          <label for="cat-medical">Medical Info</label>
+          <textarea id="cat-medical" placeholder="Vaccination status, health concerns, diet, etc..."></textarea>
+        </div>
+        <div class="form-group">
           <label for="cat-filters">Filters (for search)</label>
           <input type="text" id="cat-filter-input" placeholder="Type and press Enter to add">
           <div class="filters-input" id="cat-filters-list"></div>
@@ -594,7 +720,7 @@
 
   <div class="modal" id="foster-modal">
     <div class="modal-content">
-      <h2 id="foster-modal-title">Add New Foster</h2>
+      <h2 id="foster-modal-title">Add Foster Cat</h2>
       <form id="foster-form">
         <input type="hidden" id="foster-id">
         <div class="form-group">
@@ -602,17 +728,89 @@
           <input type="text" id="foster-name" required>
         </div>
         <div class="form-group">
-          <label for="foster-description">Description / Story</label>
-          <textarea id="foster-description" placeholder="Tell us about this foster parent..."></textarea>
+          <label for="foster-age">Age</label>
+          <input type="text" id="foster-age" placeholder="e.g., 2 years">
         </div>
         <div class="form-group">
-          <label>Image</label>
-          <input type="file" id="foster-image" accept="image/*">
-          <div class="image-preview" id="foster-image-preview"></div>
+          <label for="foster-gender">Gender</label>
+          <select id="foster-gender">
+            <option value="">Select...</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="foster-breed">Breed</label>
+          <input type="text" id="foster-breed" placeholder="e.g., Tabby, Siamese">
+        </div>
+        <div class="form-group">
+          <label for="foster-color">Color</label>
+          <input type="text" id="foster-color" placeholder="e.g., Orange, Black and White">
+        </div>
+        <div class="form-group">
+          <label for="foster-status">Status</label>
+          <select id="foster-status">
+            <option value="available">In Foster</option>
+            <option value="pending">Adoption Pending</option>
+            <option value="adopted">Adopted</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="foster-description">Description / Story</label>
+          <textarea id="foster-description" placeholder="Tell us about this cat..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="foster-personality">Personality</label>
+          <input type="text" id="foster-personality" placeholder="e.g., Playful, Independent, Quiet">
+        </div>
+        <div class="form-group">
+          <label for="foster-medical">Medical Info</label>
+          <textarea id="foster-medical" placeholder="Vaccination status, health concerns, diet, etc..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Filters (for search)</label>
+          <input type="text" id="foster-filter-input" placeholder="Type and press Enter to add">
+          <div class="filters-input" id="foster-filters-list"></div>
+        </div>
+        <div class="form-group">
+          <label>Images</label>
+          <input type="file" id="foster-images" multiple accept="image/*">
+          <div class="image-preview" id="foster-images-preview"></div>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" onclick="closeFosterModal()">Cancel</button>
-          <button type="submit" class="btn">Save Foster</button>
+          <button type="submit" class="btn">Save Foster Cat</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="fosterparent-modal">
+    <div class="modal-content">
+      <h2 id="fosterparent-modal-title">Add Foster Parent</h2>
+      <form id="fosterparent-form">
+        <input type="hidden" id="fosterparent-id">
+        <div class="form-group">
+          <label for="fosterparent-name">Foster Parent Name *</label>
+          <input type="text" id="fosterparent-name" required placeholder="e.g., Jane D.">
+        </div>
+        <div class="form-group">
+          <label for="fosterparent-duration">How Long They Have Been Fostering</label>
+          <input type="text" id="fosterparent-duration" placeholder="e.g., 2 years, 6 months">
+        </div>
+        <div class="form-group">
+          <label for="fosterparent-statement">Statement / Story</label>
+          <textarea id="fosterparent-statement" placeholder="Share their fostering story..." rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Cat / Cats Photo</label>
+          <input type="file" id="fosterparent-image" accept="image/*" onchange="previewFosterParentImage(this)">
+          <div class="image-preview" id="fosterparent-image-preview"></div>
+          <input type="hidden" id="fosterparent-image-path">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeFosterParentModal()">Cancel</button>
+          <button type="submit" class="btn">Save Foster Parent</button>
         </div>
       </form>
     </div>
@@ -630,6 +828,10 @@
         <div class="form-group">
           <label for="event-location">Location</label>
           <input type="text" id="event-location" placeholder="e.g., Butler County Park">
+        </div>
+        <div class="form-group">
+          <label for="event-date">Date *</label>
+          <input type="datetime-local" id="event-date" required>
         </div>
         <div class="form-group">
           <label for="event-description">Description</label>
@@ -710,6 +912,7 @@
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('username').value = '';
       document.getElementById('password').value = '';
+      window.location.href = '/';
     }
 
     function showPanel(panel) {
@@ -717,16 +920,99 @@
       document.getElementById('panel-' + panel).classList.add('active');
       document.querySelectorAll('.admin-nav button[data-panel]').forEach(b => b.classList.remove('active'));
       document.querySelector(`.admin-nav button[data-panel="${panel}"]`)?.classList.add('active');
+      if (panel === 'settings') { loadVolunteerPhoto(); loadEventFlyer(); }
     }
 
+    function showSectionMessage(elId, text, isError) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.textContent = text;
+      el.style.display = 'block';
+      el.style.padding = '0.75rem 1rem';
+      el.style.borderRadius = '6px';
+      el.style.marginBottom = '1rem';
+      el.style.background = isError ? '#fde2e2' : '#e2f5e2';
+      el.style.color = isError ? '#a30000' : '#176317';
+      setTimeout(() => { el.style.display = 'none'; }, 4000);
+    }
+
+    async function loadSectionImage(sectionKey, wrapId, label) {
+      const wrap = document.getElementById(wrapId);
+      if (!wrap) return;
+      try {
+        const res = await fetch('/api/sections/' + sectionKey);
+        if (res.ok) {
+          const s = await res.json();
+          if (s && s.content) {
+            wrap.innerHTML = `<div style="background:#f5f5f5; border-radius:8px; padding:0.75rem; width:100%; min-height:200px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img src="${s.content}?t=${Date.now()}" alt="${label}" style="max-width:100%; max-height:300px; width:auto; height:auto; object-fit:contain; border-radius:6px;"></div>`;
+            return;
+          }
+        }
+      } catch (e) {}
+      wrap.innerHTML = `<div style="background:#f5f5f5; border-radius:8px; padding:2rem; text-align:center; color:#999; width:100%;">No ${label.toLowerCase()} set yet.</div>`;
+    }
+
+    async function uploadSectionImage(sectionKey, inputId, msgId, label, reloadFn) {
+      const input = document.getElementById(inputId);
+      const file = input && input.files && input.files[0];
+      if (!file) {
+        showSectionMessage(msgId, 'Please choose an image file first.', true);
+        return;
+      }
+      try {
+        const formData = new FormData();
+        formData.append('image', file);
+        const upRes = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (!upRes.ok) throw new Error('Upload failed');
+        const upData = await upRes.json();
+        const saveRes = await fetch('/api/sections/' + sectionKey, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: upData.path, isPublished: true })
+        });
+        if (!saveRes.ok) throw new Error('Save failed');
+        input.value = '';
+        showSectionMessage(msgId, label + ' updated successfully.', false);
+        reloadFn();
+      } catch (err) {
+        showSectionMessage(msgId, 'Could not upload: ' + err.message, true);
+      }
+    }
+
+    async function deleteSectionImage(sectionKey, msgId, label, reloadFn) {
+      if (!confirm('Delete the current ' + label.toLowerCase() + '?')) return;
+      try {
+        const saveRes = await fetch('/api/sections/' + sectionKey, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: '', isPublished: true })
+        });
+        if (!saveRes.ok) throw new Error('Delete failed');
+        showSectionMessage(msgId, label + ' removed.', false);
+        reloadFn();
+      } catch (err) {
+        showSectionMessage(msgId, 'Could not delete: ' + err.message, true);
+      }
+    }
+
+    function loadVolunteerPhoto()  { return loadSectionImage('volunteer_photo', 'volunteer-photo-current', 'Volunteer Team Photo'); }
+    function uploadVolunteerPhoto(){ return uploadSectionImage('volunteer_photo', 'volunteer-photo-input', 'volunteer-photo-message', 'Volunteer photo', loadVolunteerPhoto); }
+    function deleteVolunteerPhoto(){ return deleteSectionImage('volunteer_photo', 'volunteer-photo-message', 'Volunteer photo', loadVolunteerPhoto); }
+    function loadEventFlyer()      { return loadSectionImage('event_flyer', 'event-flyer-current', 'Event Flyer'); }
+    function uploadEventFlyer()    { return uploadSectionImage('event_flyer', 'event-flyer-input', 'event-flyer-message', 'Event flyer', loadEventFlyer); }
+    function deleteEventFlyer()    { return deleteSectionImage('event_flyer', 'event-flyer-message', 'Event flyer', loadEventFlyer); }
+
+    let fosterParentsList = [];
+
     async function loadAllData() {
-      await Promise.all([loadCats(), loadFosters(), loadEvents(), loadPhotos()]);
+      await Promise.all([loadCats(), loadFosters(), loadFosterParents(), loadEvents(), loadPhotos()]);
       updateStats();
     }
 
     function updateStats() {
       document.getElementById('stat-cats').textContent = cats.length;
       document.getElementById('stat-fosters').textContent = fosters.length;
+      document.getElementById('stat-fosterparents').textContent = fosterParentsList.length;
       document.getElementById('stat-events').textContent = events.length;
       document.getElementById('stat-photos').textContent = photos.length;
     }
@@ -749,7 +1035,7 @@
         const imgSrc = images.length > 0 ? images[0] : '/images/cat1.jpg';
         grid.innerHTML += `
           <div class="admin-card">
-            <img src="${imgSrc}" alt="${cat.name}" onerror="this.src='/images/cat1.jpg'">
+            <div class="admin-card-photo"><img src="${imgSrc}" alt="${cat.name}" onerror="this.src='/images/cat1.jpg'"></div>
             <h3>${cat.name}</h3>
             <p>${cat.breed || 'Unknown breed'} - ${cat.age || 'Age unknown'}</p>
             <span class="status ${cat.isPublished ? 'published' : 'draft'}">${cat.isPublished ? 'Published' : 'Draft'}</span>
@@ -775,16 +1061,21 @@
       const grid = document.getElementById('fosters-grid');
       grid.innerHTML = `<div class="admin-card add-card" onclick="openFosterModal()">
         <span>+</span>
-        <p>Add New Foster</p>
+        <p>Add Foster Cat</p>
       </div>`;
       
       fosters.forEach(foster => {
-        const imgSrc = foster.image || '/Foster/Abby.png';
+        const images = foster.images || [];
+        const imgSrc = foster.image || (images.length > 0 ? images[0] : '');
+        const imgTag = imgSrc
+          ? `<div class="admin-card-photo"><img src="${imgSrc}" alt="${foster.name}" onerror="this.style.display='none'"></div>`
+          : `<div class="admin-card-photo" style="display:flex;align-items:center;justify-content:center;color:#aaa;font-size:.85rem;">No photo</div>`;
         grid.innerHTML += `
           <div class="admin-card">
-            <img src="${imgSrc}" alt="${foster.name}" onerror="this.src='/Foster/Abby.png'">
+            ${imgTag}
             <h3>${foster.name}</h3>
-            <p>${foster.description?.substring(0, 100) || 'No description'}...</p>
+            <p>${foster.breed || 'Unknown breed'} &bull; ${foster.age || 'Age unknown'}</p>
+            <p>${foster.description?.substring(0, 80) || 'No description'}${foster.description && foster.description.length > 80 ? '...' : ''}</p>
             <span class="status ${foster.isPublished ? 'published' : 'draft'}">${foster.isPublished ? 'Published' : 'Draft'}</span>
             <div class="card-actions">
               <button class="btn" onclick="editFoster(${foster.id})">Edit</button>
@@ -812,7 +1103,7 @@
       </div>`;
       
       events.forEach(event => {
-        const date = event.date ? new Date(event.date).toLocaleDateString() : 'TBD';
+        const date = event.date ? new Date(event.date).toLocaleString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : 'TBD';
         grid.innerHTML += `
           <div class="admin-card">
             <h3>${event.title}</h3>
@@ -832,6 +1123,9 @@
       });
     }
 
+    let photoFilter = 'all';
+    function setPhotoFilter(f) { photoFilter = f; renderPhotos(); }
+
     async function loadPhotos() {
       const res = await fetch('/api/photos');
       photos = await res.json();
@@ -841,17 +1135,66 @@
     function renderPhotos() {
       const grid = document.getElementById('photos-grid');
       grid.innerHTML = '';
-      photos.forEach(photo => {
+      const list = photoFilter === 'all' ? photos : photos.filter(p => (p.category || 'general') === photoFilter);
+      if (list.length === 0) {
+        grid.innerHTML = '<p style="color:#999;">No photos in this category yet.</p>';
+        return;
+      }
+      list.forEach(photo => {
+        const src = photo.filename.startsWith('/') ? photo.filename : ('/uploads/' + photo.filename);
+        const cat = photo.category || 'general';
+        const safeCaption = (photo.caption || '').replace(/"/g, '&quot;');
         grid.innerHTML += `
           <div class="admin-card">
-            <img src="${photo.filename}" alt="${photo.caption || 'Photo'}">
-            <p>${photo.caption || 'No caption'}</p>
-            <div class="card-actions">
-              <button class="btn btn-danger" onclick="deletePhoto(${photo.id})">Delete</button>
+            <div style="width:100%; height:180px; background:#f5f5f5; border-radius:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+              <img src="${src}" alt="${safeCaption || 'Photo'}" style="max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain;">
+            </div>
+            <p style="margin-top:0.5rem;">
+              <span style="background:#eef; color:#446; padding:2px 8px; border-radius:10px; font-size:0.75rem; text-transform:uppercase;">${cat}</span>
+              <span style="color:#444;">${photo.caption || '<em style="color:#aaa;">No caption</em>'}</span>
+            </p>
+            <div class="card-actions" style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+              <button class="btn small" onclick="editPhotoCaption(${photo.id})">Edit Caption</button>
+              <button class="btn small" onclick="changePhotoCategory(${photo.id})">Category</button>
+              <button class="btn btn-danger small" onclick="deletePhoto(${photo.id})">Delete</button>
             </div>
           </div>
         `;
       });
+    }
+
+    async function editPhotoCaption(id) {
+      const photo = photos.find(p => p.id === id);
+      if (!photo) return;
+      const newCaption = prompt('Edit caption for this photo:', photo.caption || '');
+      if (newCaption === null) return;
+      const res = await fetch('/api/photos/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caption: newCaption })
+      });
+      if (res.ok) loadPhotos();
+      else alert('Could not update caption.');
+    }
+
+    async function changePhotoCategory(id) {
+      const photo = photos.find(p => p.id === id);
+      if (!photo) return;
+      const current = photo.category || 'general';
+      const next = prompt('Set category ("event" or "general"):', current);
+      if (next === null) return;
+      const cleaned = next.trim().toLowerCase();
+      if (cleaned !== 'event' && cleaned !== 'general') {
+        alert('Category must be either "event" or "general".');
+        return;
+      }
+      const res = await fetch('/api/photos/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: cleaned })
+      });
+      if (res.ok) loadPhotos();
+      else alert('Could not update category.');
     }
 
     function openCatModal(cat = null) {
@@ -864,6 +1207,8 @@
       document.getElementById('cat-color').value = cat?.color || '';
       document.getElementById('cat-status').value = cat?.status || 'available';
       document.getElementById('cat-description').value = cat?.description || '';
+      document.getElementById('cat-personality').value = cat?.personality || '';
+      document.getElementById('cat-medical').value = cat?.medical || '';
       currentCatFilters = cat?.filters || [];
       currentCatImages = cat?.images || [];
       renderCatFilters();
@@ -936,6 +1281,8 @@
         color: document.getElementById('cat-color').value,
         status: document.getElementById('cat-status').value,
         description: document.getElementById('cat-description').value,
+        personality: document.getElementById('cat-personality').value,
+        medical: document.getElementById('cat-medical').value,
         filters: currentCatFilters,
         images: currentCatImages
       };
@@ -974,8 +1321,13 @@
       loadCats();
     }
 
+    
+
+    let currentFosterFilters = [];
+    let currentFosterImages = [];
+
     function openFosterModal(foster = null) {
-      document.getElementById('foster-modal-title').textContent = foster ? 'Edit Foster' : 'Add New Foster';
+      document.getElementById('foster-modal-title').textContent = foster ? 'Edit Foster Cat' : 'Add Foster Cat';
       document.getElementById('foster-id').value = foster?.id || '';
       document.getElementById('foster-name').value = foster?.name || '';
       document.getElementById('foster-age').value = foster?.age || '';
@@ -983,77 +1335,70 @@
       document.getElementById('foster-breed').value = foster?.breed || '';
       document.getElementById('foster-color').value = foster?.color || '';
       document.getElementById('foster-status').value = foster?.status || 'available';
-      document.getElementById('foster-personality').value = foster?.personality || '';
       document.getElementById('foster-description').value = foster?.description || '';
-      document.getElementById('foster-image-preview').innerHTML = foster?.image ? `<img src="${foster.image}">` : '';
-      document.getElementById('foster-modal').classList.add('active');
+      document.getElementById('foster-personality').value = foster?.personality || '';
       document.getElementById('foster-medical').value = foster?.medical || '';
-      currentFosterFiltersFilters = foster?.filters || [];
+      currentFosterFilters = foster?.filters || [];
       currentFosterImages = foster?.images || [];
+      renderFosterFilters();
+      renderFosterImagePreviews();
+      document.getElementById('foster-modal').classList.add('active');
     }
 
     function closeFosterModal() {
       document.getElementById('foster-modal').classList.remove('active');
       document.getElementById('foster-form').reset();
+      currentFosterFilters = [];
+      currentFosterImages = [];
+      document.getElementById('foster-images-preview').innerHTML = '';
+      document.getElementById('foster-filters-list').innerHTML = '';
     }
 
-      document.getElementById('foster-form').addEventListener('submit', async (e) => {
+    document.getElementById('foster-filter-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
         e.preventDefault();
-
-        const fileInput = document.getElementById('foster-images');
-        if (fileInput.files.length > 0) {
-          const formData = new FormData();
-          for (let file of fileInput.files) {
-            formData.append('images', file);
-          }
-          const uploadRes = await fetch('/api/upload/multiple', {
-            method: 'POST',
-            body: formData
-          });
-          const uploadData = await uploadRes.json();
-          if (uploadData.files) {
-            currentFosterImages = [...currentFosterImages, ...uploadData.files.map(f => f.path)];
-          }
+        const value = e.target.value.trim();
+        if (value && !currentFosterFilters.includes(value)) {
+          currentFosterFilters.push(value);
+          renderFosterFilters();
         }
-
-
-      document.getElementById('foster-filter-input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const value = e.target.value.trim();
-          if (value && !currentFosterFilters.includes(value)) {
-            currentFosterFilters.push(value);
-            renderFosterFilters();
-          }
-          e.target.value = '';
-        }
-      });
-
-      function renderFosterFilters() {
-        const container = document.getElementById('foster-filters-list');
-        container.innerHTML = currentFosterFilters.map((f, i) => 
-          `<span class="filter-tag">${f}<button type="button" onclick="removeFosterFilter(${i})">×</button></span>`
-        ).join('');
+        e.target.value = '';
       }
+    });
 
-      function removeFosterFilter(index) {
-        currentFosterFilters.splice(index, 1);
-        renderFosterFilters();
+    function renderFosterFilters() {
+      const container = document.getElementById('foster-filters-list');
+      if (container) container.innerHTML = currentFosterFilters.map((f, i) =>
+        `<span class="filter-tag">${f}<button type="button" onclick="removeFosterFilter(${i})">×</button></span>`
+      ).join('');
+    }
+
+    function removeFosterFilter(index) {
+      currentFosterFilters.splice(index, 1);
+      renderFosterFilters();
+    }
+
+    function renderFosterImagePreviews() {
+      const container = document.getElementById('foster-images-preview');
+      if (container) container.innerHTML = currentFosterImages.map(img =>
+        `<img src="${img}" alt="Preview" style="width:80px;height:80px;object-fit:cover;border-radius:4px;">`
+      ).join('');
+    }
+
+    document.getElementById('foster-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('foster-images');
+      if (fileInput && fileInput.files.length > 0) {
+        const formData = new FormData();
+        for (let file of fileInput.files) formData.append('images', file);
+        const uploadRes = await fetch('/api/upload/multiple', { method: 'POST', body: formData });
+        const uploadData = await uploadRes.json();
+        if (uploadData.files) currentFosterImages = [...currentFosterImages, ...uploadData.files.map(f => f.path)];
       }
-
-      function renderFosterImagePreviews() {
-        const container = document.getElementById('foster-images-preview');
-        container.innerHTML = currentFosterImages.map(img => 
-          `<img src="${img}" alt="Preview">`
-        ).join('');
-      }
-
-
-
 
       const fosterData = {
         name: document.getElementById('foster-name').value,
-        description: document.getElementById('foster-description').value,
         age: document.getElementById('foster-age').value,
         gender: document.getElementById('foster-gender').value,
         breed: document.getElementById('foster-breed').value,
@@ -1063,20 +1408,14 @@
         personality: document.getElementById('foster-personality').value,
         medical: document.getElementById('foster-medical').value,
         filters: currentFosterFilters,
-        images: currentFosterImages
+        images: currentFosterImages,
+        image: currentFosterImages.length > 0 ? currentFosterImages[0] : null
       };
-
-      if (imagePath) fosterData.image = imagePath;
 
       const id = document.getElementById('foster-id').value;
       const method = id ? 'PUT' : 'POST';
       const url = id ? `/api/fosters/${id}` : '/api/fosters';
-
-      await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fosterData)
-      });
+      await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fosterData) });
 
       closeFosterModal();
       loadFosters();
@@ -1089,7 +1428,7 @@
     }
 
     async function deleteFoster(id) {
-      if (confirm('Are you sure you want to delete this foster?')) {
+      if (confirm('Are you sure you want to delete this foster cat?')) {
         await fetch(`/api/fosters/${id}`, { method: 'DELETE' });
         loadFosters();
         updateStats();
@@ -1097,8 +1436,115 @@
     }
 
     async function toggleFosterPublish(id) {
-      await fetch(`/api/fosters/${id}/publish`, { method: 'POST' });
+      const foster = fosters.find(f => f.id === id);
+      const endpoint = foster?.isPublished ? 'unpublish' : 'publish';
+      await fetch(`/api/fosters/${id}/${endpoint}`, { method: 'POST' });
       loadFosters();
+    }
+
+    async function loadFosterParents() {
+      const res = await fetch('/api/foster-parents');
+      fosterParentsList = await res.json();
+      renderFosterParents();
+    }
+
+    function renderFosterParents() {
+      const grid = document.getElementById('fosterparents-grid');
+      grid.innerHTML = `<div class="admin-card add-card" onclick="openFosterParentModal()">
+        <span>+</span>
+        <p>Add Foster Parent</p>
+      </div>`;
+
+      fosterParentsList.forEach(fp => {
+        const imgTag = fp.image
+          ? `<div class="admin-card-photo"><img src="${fp.image}" alt="${fp.name}" onerror="this.style.display='none'"></div>`
+          : `<div class="admin-card-photo" style="display:flex;align-items:center;justify-content:center;color:#aaa;font-size:.85rem;">No photo</div>`;
+        grid.innerHTML += `
+          <div class="admin-card">
+            ${imgTag}
+            <h3>${fp.name}</h3>
+            ${fp.fosterDuration ? `<p style="color:#667eea;font-size:.85rem;font-weight:600;">Fostering for: ${fp.fosterDuration}</p>` : ''}
+            <p>${fp.statement?.substring(0, 80) || 'No statement'}${fp.statement && fp.statement.length > 80 ? '...' : ''}</p>
+            <span class="status ${fp.isPublished ? 'published' : 'draft'}">${fp.isPublished ? 'Published' : 'Draft'}</span>
+            <div class="card-actions">
+              <button class="btn" onclick="editFosterParent(${fp.id})">Edit</button>
+              <button class="btn ${fp.isPublished ? 'btn-secondary' : 'btn-success'}" onclick="toggleFosterParentPublish(${fp.id})">
+                ${fp.isPublished ? 'Unpublish' : 'Publish'}
+              </button>
+              <button class="btn btn-danger" onclick="deleteFosterParent(${fp.id})">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function openFosterParentModal(fp = null) {
+      document.getElementById('fosterparent-modal-title').textContent = fp ? 'Edit Foster Parent' : 'Add Foster Parent';
+      document.getElementById('fosterparent-id').value = fp?.id || '';
+      document.getElementById('fosterparent-name').value = fp?.name || '';
+      document.getElementById('fosterparent-duration').value = fp?.fosterDuration || '';
+      document.getElementById('fosterparent-statement').value = fp?.statement || '';
+      document.getElementById('fosterparent-image-path').value = fp?.image || '';
+      document.getElementById('fosterparent-image-preview').innerHTML = fp?.image
+        ? `<img src="${fp.image}" style="max-width:200px;max-height:150px;object-fit:cover;border-radius:6px;">`
+        : '';
+      document.getElementById('fosterparent-modal').classList.add('active');
+    }
+
+    function closeFosterParentModal() {
+      document.getElementById('fosterparent-modal').classList.remove('active');
+      document.getElementById('fosterparent-form').reset();
+      document.getElementById('fosterparent-image-preview').innerHTML = '';
+      document.getElementById('fosterparent-image-path').value = '';
+    }
+
+    async function previewFosterParentImage(input) {
+      if (!input.files || !input.files[0]) return;
+      const formData = new FormData();
+      formData.append('image', input.files[0]);
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.path) {
+        document.getElementById('fosterparent-image-path').value = data.path;
+        document.getElementById('fosterparent-image-preview').innerHTML = `<img src="${data.path}" style="max-width:200px;max-height:150px;object-fit:cover;border-radius:6px;">`;
+      }
+    }
+
+    document.getElementById('fosterparent-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fpData = {
+        name: document.getElementById('fosterparent-name').value,
+        fosterDuration: document.getElementById('fosterparent-duration').value,
+        statement: document.getElementById('fosterparent-statement').value,
+        image: document.getElementById('fosterparent-image-path').value || null
+      };
+      const id = document.getElementById('fosterparent-id').value;
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/api/foster-parents/${id}` : '/api/foster-parents';
+      await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fpData) });
+      closeFosterParentModal();
+      loadFosterParents();
+      updateStats();
+    });
+
+    async function editFosterParent(id) {
+      const fp = fosterParentsList.find(f => f.id === id);
+      if (fp) openFosterParentModal(fp);
+    }
+
+    async function deleteFosterParent(id) {
+      if (confirm('Are you sure you want to delete this foster parent?')) {
+        await fetch(`/api/foster-parents/${id}`, { method: 'DELETE' });
+        loadFosterParents();
+        updateStats();
+      }
+    }
+
+    async function toggleFosterParentPublish(id) {
+      const fp = fosterParentsList.find(f => f.id === id);
+      const endpoint = fp?.isPublished ? 'unpublish' : 'publish';
+      await fetch(`/api/foster-parents/${id}/${endpoint}`, { method: 'POST' });
+      loadFosterParents();
     }
 
     function openEventModal(event = null) {
@@ -1107,6 +1553,15 @@
       document.getElementById('event-title').value = event?.title || '';
       document.getElementById('event-location').value = event?.location || '';
       document.getElementById('event-description').value = event?.description || '';
+      
+      if (event && event.date) {
+        const date = new Date(event.date);
+        const localISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        document.getElementById('event-date').value = localISO;
+      } else {
+        document.getElementById('event-date').value = '';
+      }
+      
       document.getElementById('event-modal').classList.add('active');
     }
 
@@ -1121,7 +1576,8 @@
       const eventData = {
         title: document.getElementById('event-title').value,
         location: document.getElementById('event-location').value,
-        description: document.getElementById('event-description').value
+        description: document.getElementById('event-description').value,
+        date: document.getElementById('event-date').value
       };
       
       const id = document.getElementById('event-id').value;
@@ -1158,6 +1614,12 @@
     }
 
     async function uploadPhotos(files) {
+      const category = (document.getElementById('photo-upload-category')?.value) || 'general';
+      const caption  = (document.getElementById('photo-upload-caption')?.value) || '';
+      const status   = document.getElementById('photo-upload-status');
+      let done = 0;
+      const total = files.length;
+      if (status) status.textContent = `Uploading 0 / ${total}…`;
       for (let file of files) {
         const formData = new FormData();
         formData.append('image', file);
@@ -1170,10 +1632,26 @@
           await fetch('/api/photos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filename: data.path })
+            body: JSON.stringify({
+              filename: data.path,
+              originalName: file.name,
+              category: category,
+              caption: caption,
+              isPublished: true
+            })
           });
         }
+        done++;
+        if (status) status.textContent = `Uploading ${done} / ${total}…`;
       }
+      if (status) {
+        status.textContent = `Uploaded ${done} photo${done === 1 ? '' : 's'}.`;
+        setTimeout(() => { status.textContent = ''; }, 3000);
+      }
+      const capInput = document.getElementById('photo-upload-caption');
+      if (capInput) capInput.value = '';
+      const fileInput = document.getElementById('photo-upload');
+      if (fileInput) fileInput.value = '';
       loadPhotos();
       updateStats();
     }
@@ -1229,6 +1707,167 @@
       }
       msgDiv.style.display = 'block';
     }
+
+    // Page Builder Functionality
+    const pageSections = [
+      { id: 'hero', name: 'Hero Section', description: 'Main welcome banner with headline and CTA', editable: true },
+      { id: 'about', name: 'About Us', description: 'Organization story and mission', editable: true },
+      { id: 'adoptable-cats', name: 'Adoptable Cats', description: 'Cat listing section', editable: false },
+      { id: 'foster-cats', name: 'Foster Cats', description: 'Foster cat listings', editable: false },
+      { id: 'events', name: 'Events', description: 'Upcoming events section', editable: false },
+      { id: 'faq', name: 'FAQ', description: 'Frequently asked questions', editable: true },
+      { id: 'contact', name: 'Contact & Donate', description: 'Contact information and donation options', editable: true },
+      { id: 'footer', name: 'Footer', description: 'Footer with social links', editable: true }
+    ];
+
+    let sectionContent = {};
+    let selectedSection = null;
+    let draggedSection = null;
+
+    function loadPageBuilder() {
+      loadSectionContent();
+      renderPageSections();
+    }
+
+    async function loadSectionContent() {
+      try {
+        const res = await fetch('/api/sections');
+        const sections = await res.json();
+        sections.forEach(s => {
+          sectionContent[s.sectionKey] = s.content || s.draftContent || '';
+        });
+      } catch (e) {
+        console.log('Could not load sections');
+      }
+    }
+
+    function renderPageSections() {
+      const container = document.getElementById('page-sections-list');
+      container.innerHTML = '';
+      
+      pageSections.forEach((section, index) => {
+        const div = document.createElement('div');
+        div.className = 'page-section-card';
+        div.setAttribute('draggable', 'true');
+        div.setAttribute('data-index', index);
+        div.style.cssText = 'background:#fff; padding:1rem; border-radius:8px; border:1px solid #ddd; cursor:grab; transition:all 0.2s;';
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="color:#667eea;">${section.name}</strong>
+              <p style="color:#888; font-size:0.85rem; margin-top:0.25rem;">${section.description}</p>
+            </div>
+            <div>
+              ${section.editable ? `<button class="btn" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="editSection('${section.id}')">Edit</button>` : '<span style="color:#999; font-size:0.8rem;">Auto-managed</span>'}
+            </div>
+          </div>
+        `;
+        
+        div.addEventListener('dragstart', (e) => {
+          draggedSection = index;
+          e.dataTransfer.effectAllowed = 'move';
+          div.style.opacity = '0.5';
+        });
+        
+        div.addEventListener('dragend', () => {
+          div.style.opacity = '1';
+          draggedSection = null;
+        });
+        
+        div.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          div.style.borderColor = '#667eea';
+        });
+        
+        div.addEventListener('dragleave', () => {
+          div.style.borderColor = '#ddd';
+        });
+        
+        div.addEventListener('drop', (e) => {
+          e.preventDefault();
+          div.style.borderColor = '#ddd';
+          if (draggedSection !== null && draggedSection !== index) {
+            const moved = pageSections.splice(draggedSection, 1)[0];
+            pageSections.splice(index, 0, moved);
+            renderPageSections();
+          }
+        });
+        
+        container.appendChild(div);
+      });
+    }
+
+    function editSection(sectionId) {
+      selectedSection = sectionId;
+      const section = pageSections.find(s => s.id === sectionId);
+      const content = sectionContent[sectionId] || '';
+      
+      const editorDiv = document.getElementById('section-editor');
+      editorDiv.innerHTML = `
+        <h4 style="color:#667eea; margin-bottom:1rem;">Editing: ${section.name}</h4>
+        <div class="form-group">
+          <label>Section Content (HTML supported)</label>
+          <textarea id="section-content-editor" style="width:100%; min-height:200px; padding:0.75rem; border:1px solid #ddd; border-radius:6px; font-family:monospace;">${content}</textarea>
+        </div>
+        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+          <button class="btn" onclick="saveSectionContent()">Save Section</button>
+          <button class="btn btn-secondary" onclick="cancelSectionEdit()">Cancel</button>
+        </div>
+      `;
+    }
+
+    async function saveSectionContent() {
+      if (!selectedSection) return;
+      
+      const content = document.getElementById('section-content-editor').value;
+      sectionContent[selectedSection] = content;
+      
+      try {
+        await fetch(`/api/sections/${selectedSection}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ draftContent: content })
+        });
+        alert('Section saved! Preview changes or publish when ready.');
+      } catch (e) {
+        alert('Error saving section');
+      }
+      
+      cancelSectionEdit();
+    }
+
+    function cancelSectionEdit() {
+      selectedSection = null;
+      document.getElementById('section-editor').innerHTML = '<p style="color:#999; text-align:center;">Select a section to edit</p>';
+    }
+
+    function previewPageBuilder() {
+      window.open('/', '_blank');
+    }
+
+    async function savePageBuilder() {
+      try {
+        for (const [key, content] of Object.entries(sectionContent)) {
+          await fetch(`/api/sections/${key}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ draftContent: content })
+          });
+        }
+        alert('All changes saved! Use "Publish All Changes" to make them live.');
+      } catch (e) {
+        alert('Error saving changes');
+      }
+    }
+
+    // Load page builder when panel is shown
+    const originalShowPanel = showPanel;
+    showPanel = function(panel) {
+      originalShowPanel(panel);
+      if (panel === 'pagebuilder') {
+        loadPageBuilder();
+      }
+    };
   </script>
 </body>
 </html>
